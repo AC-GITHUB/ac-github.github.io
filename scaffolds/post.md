@@ -3,9 +3,9 @@ layout: post
 title: {{ title }}
 date: {{ date }}
 comments: true
-updated:
-tags:
-categories:
-description:
-excerpt:
+updated: {{ date }}
+tags: ""
+categories: ""
+description: ""
+excerpt: ""
 ---
