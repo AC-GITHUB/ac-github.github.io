@@ -81,7 +81,7 @@ deploy:
   type: git
   repository: 
      github: https://github.com/AC-GITHUB/ac-github.github.io.git
-     gitee: https://gitee.com/coder2015/accblog.git
+     gitee: https://gitee.com/coder2015/Coder2015.git
   branch: master
 jsonContent:
   meta: false
