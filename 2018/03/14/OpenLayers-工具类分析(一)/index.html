@@ -1,0 +1,126 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="这是艾晨博客,主要记录开发知识"><meta name="keywords" content="AC"><title>OpenLayers-工具类分析(一) | 艾晨博客</title><link rel="stylesheet" type="text/css" href="//fonts.neworld.org/css?family=Source+Code+Pro"><link rel="stylesheet" type="text/css" href="/css/style.css?v=2.0.1"><link rel="stylesheet" type="text/css" href="/css/highlight.css?v=2.0.1"><link rel="Shortcut Icon" href="/favicon.ico"><link rel="bookmark" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">OpenLayers-工具类分析(一)</h1><a id="logo" href="/.">艾晨博客</a><p class="description">艾晨博客</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div><div id="search-form"><div id="result-mask" class="hide"></div><label><input id="search-key" type="text" autocomplete="off" placeholder="Arama"></label><div id="result-wrap" class="hide"><div id="search-result"></div></div><div class="hide"><template id="search-tpl"><div class="item"><a href="/{path}" title="{title}"><div class="title">{title}</div><div class="time">{date}</div><div class="tags">{tags}</div></a></div></template></div></div></div><div id="layout" class="layout-g"><div class="layout-l"><div class="content_container"><div class="post"><h1 class="post-title">OpenLayers-工具类分析(一)</h1><div class="post-meta"><a href="/2018/03/14/OpenLayers-工具类分析(一)/#comments" class="comment-count"></a><p><span class="date">Mar 14, 2018</span><span><a href="/categories/openlayers/" class="category">openlayers</a></span><span><i id="busuanzi_container_page_pv"><i id="busuanzi_value_page_pv"></i><i>点击</i></i></span></p></div><div class="post-content"><h1 id="disposable"><a href="#disposable" class="headerlink" title="disposable"></a>disposable</h1><ul>
+<li>ol.Disposable.prototype.dispose = function(),判断是否已释放对象，并调用ol.Disposable.prototype.disposeInternal<h1 id="observable"><a href="#observable" class="headerlink" title="observable"></a>observable</h1></li>
+<li>ol.Observable.unByKey = function(key),删除该key的注册的事件</li>
+<li>ol.Observable.prototype.changed = function(),分发执行改变事件</li>
+<li>ol.Observable.prototype.getRevision = function() ,获取当前版本</li>
+<li>ol.Observable.prototype.on = function(type, listener, opt_this),注册事件</li>
+<li>ol.Observable.prototype.once = function(type, listener, opt_this),注册只执行一次的事件</li>
+<li>ol.Observable.prototype.un = function(type, listener, opt_this),卸载注册的事件<h1 id="object"><a href="#object" class="headerlink" title="object"></a>object</h1></li>
+<li>ol.Object.getChangeEventType = function(key)，根据传入的key获取事件类型</li>
+<li>ol.Object.prototype.get = function(key)，根据key获取值</li>
+<li>ol.Object.prototype.getKeys = function()获取所有key的集合</li>
+<li>ol.Object.prototype.getProperties = function()获取所有的属性</li>
+<li>ol.Object.prototype.notify = function(key, oldValue),通知所有注册的事件执行</li>
+<li>ol.Object.prototype.set = function(key, value, opt_silent)设置属性</li>
+<li>ol.Object.prototype.setProperties = function(values, opt_silent),合并values到当前的对象</li>
+<li><p>ol.Object.prototype.unset = function(key, opt_silent),删除key项<br><img src="/static/articleImage/openlayers-object%E9%9B%86%E6%88%90%E4%BD%93%E7%B3%BB.png" alt="object集成体系"></p>
+<h1 id="array类"><a href="#array类" class="headerlink" title="array类"></a>array类</h1></li>
+<li><p>ol.array.binarySearch = function(haystack, needle, opt_comparator)数组二分搜索给定的项是否存在于数组中，haystack搜索数据源,needle被查找的数据项,opt_comparator比较函数</p>
+</li>
+<li>ol.array.numberSafeCompareFunction = function(a, b)比较a,b两个数字类型的大小</li>
+<li>ol.array.includes = function(arr, obj),查找obj是否包含于arr中</li>
+<li>ol.array.linearFindNearest = function(arr, target, direction)在arr中查找与target的值最接近的数据</li>
+<li>ol.array.reverseSubArray = function(arr, begin, end)反转数组中begin和end之间的数据</li>
+<li>ol.array.extend = function(arr, data),将data添加到arr数组的后面</li>
+<li>ol.array.remove = function(arr, obj),移除arr数组中的obj数据</li>
+<li>ol.array.find = function(arr, func),通过func查找符合条件的数据</li>
+<li>ol.array.equals = function(arr1, arr2)，比较arr1和arr2是否完全相等</li>
+<li>ol.array.stableSort = function(arr, compareFnc),对数组排序,compareFnc数据比较函数</li>
+<li>ol.array.findIndex = function(arr, func),查找arr中符合func中的条件的数据</li>
+<li>ol.array.isSorted = function(arr, opt_func, opt_strict)<h1 id="attribution"><a href="#attribution" class="headerlink" title="attribution"></a>attribution</h1></li>
+<li>ol.Attribution.prototype.intersectsAnyTileRange = function(tileRanges, tileGrid, projection)<h1 id="centerconstraint"><a href="#centerconstraint" class="headerlink" title="centerconstraint"></a>centerconstraint</h1></li>
+<li>ol.CenterConstraint.createExtent = function(extent),输入一个矩形框,返回一个函数,该函数使用输入的坐标的x,y值与extent的四个值作对比，计算出接近中心点的坐标</li>
+<li>ol.CenterConstraint.none = function(center),直接返回输入的值<h1 id="collection"><a href="#collection" class="headerlink" title="collection"></a>collection</h1></li>
+<li>ol.Collection.prototype.clear = function()删除所有的数据</li>
+<li>ol.Collection.prototype.extend = function(arr),将arr中的数据合并到zhge这个集合中</li>
+<li>ol.Collection.prototype.forEach = function(f, opt_this),遍历集合使用f函数处理</li>
+<li>ol.Collection.prototype.getArray = function(),返回集合绑定的数组<h1 id="coordinate"><a href="#coordinate" class="headerlink" title="coordinate"></a>coordinate</h1></li>
+<li>ol.coordinate.add = function(coordinate, delta),给coordinate中的x,y值加上delta中的x,y值</li>
+<li>ol.coordinate.closestOnCircle = function(coordinate, circle),计算coordinate距离圆上最近点的坐标</li>
+<li>ol.coordinate.closestOnSegment = function(coordinate, segment),计算坐标与线段的最近距离</li>
+<li>ol.coordinate.createStringXY = function(opt_fractionDigits),返回格式化坐标的函数</li>
+<li>ol.coordinate.degreesToStringHDMS = function(hemispheres, degrees, opt_fractionDigits)</li>
+<li>ol.coordinate.format = function(coordinate, template, opt_fractionDigits),格式化坐标输出</li>
+<li>ol.coordinate.equals = function(coordinate1, coordinate2),判断两个坐标是否相等</li>
+<li>ol.coordinate.rotate = function(coordinate, angle),将坐标旋转一定的角度</li>
+<li>ol.coordinate.scale = function(coordinate, scale),将坐标缩放一定的比例</li>
+<li>ol.coordinate.sub = function(coordinate, delta)，将坐标减去一定的值</li>
+<li>ol.coordinate.squaredDistance = function(coord1, coord2),返回两个坐标距离的平方</li>
+<li>ol.coordinate.distance = function(coord1, coord2),计算两个坐标距离</li>
+<li>ol.coordinate.squaredDistanceToSegment = function(coordinate, segment),返回点到线距离的平方</li>
+<li>ol.coordinate.toStringHDMS = function(coordinate, opt_fractionDigits)</li>
+<li>ol.coordinate.toStringXY = function(coordinate, opt_fractionDigits)转换坐标到字符串<h1 id="extent"><a href="#extent" class="headerlink" title="extent"></a>extent</h1></li>
+<li>ol.extent.boundingExtent = function(coordinates)计算coordinates的范围</li>
+<li>ol.extent.boundingExtentXYs_ = function(xs, ys, opt_extent)计算coordinates的范围</li>
+<li>ol.extent.buffer = function(extent, value, opt_extent),将extent缓冲一定的距离</li>
+<li>ol.extent.clone = function(extent, opt_extent),复制extent</li>
+<li>ol.extent.closestSquaredDistanceXY = function(extent, x, y)计算x,y到extent最近点距离的平方</li>
+<li>ol.extent.containsCoordinate = function(extent, coordinate),计算坐标是否在extent之内</li>
+<li>ol.extent.containsExtent = function(extent1, extent2),计算extent1是否包含extent2</li>
+<li>ol.extent.containsXY = function(extent, x, y),计算坐标是否在extent之内</li>
+<li>ol.extent.coordinateRelationship = function(extent, coordinate)判断坐标与extent的关系</li>
+<li>ol.extent.createOrUpdate = function(minX, minY, maxX, maxY, opt_extent)，更新extent的值，不存在时新建</li>
+<li>ol.extent.createOrUpdateFromCoordinates = function(coordinates, opt_extent)扩展extent到rings和extent并集的最大范围</li>
+<li>ol.extent.createOrUpdateFromFlatCoordinates = function(flatCoordinates, offset, end, stride, opt_extent)扩展extent到flatCoordinates和extent并集的最大范围</li>
+<li>ol.extent.createOrUpdateFromRings = function(rings, opt_extent)扩展extent到rings和extent并集的最大范围</li>
+<li>ol.extent.equals = function(extent1, extent2),判断extent1和extent2是否相等</li>
+<li>ol.extent.extend = function(extent1, extent2)，扩展extent1的范围到extent1和extent2合并的最大范围</li>
+<li>ol.extent.extendCoordinate = function(extent, coordinate),扩展extent到coordinate和extent并集的最大范围</li>
+<li>ol.extent.extendCoordinates = function(extent, coordinates),扩展extent到coordinates和extent并集的最大范围</li>
+<li>ol.extent.extendFlatCoordinates = function(extent, flatCoordinates, offset, end, stride)扩展extent到flatCoordinates和extent并集的最大范围</li>
+<li>ol.extent.extendRings = function(extent, rings)扩展extent到rings和extent并集的最大范围</li>
+<li>ol.extent.extendXY = function(extent, x, y)扩展extent到坐标和extent并集的最大范围</li>
+<li>ol.extent.forEachCorner = function(extent, callback, opt_this)</li>
+<li>ol.extent.getArea = function(extent)返回extent的面积</li>
+<li>ol.extent.getBottomLeft = function(extent),获取x,y最小的点</li>
+<li>ol.extent.getBottomRight = function(extent) 获取x最大,y最小的点</li>
+<li>ol.extent.getCenter = function(extent).获取中心点</li>
+<li>ol.extent.getCorner = function(extent, corner)，角点坐标</li>
+<li>ol.extent.getEnlargedArea = function(extent1, extent2)获取extent1和extent2并集的面积</li>
+<li>ol.extent.getForViewAndSize = function(center, resolution, rotation, size, opt_extent)</li>
+<li>ol.extent.getHeight = function(extent),获取高度</li>
+<li>ol.extent.getIntersectionArea = function(extent1, extent2),获取extent1和extent2相交的面积</li>
+<li>ol.extent.getIntersection = function(extent1, extent2, opt_extent),获取extent1和extent2相交的extent</li>
+<li>ol.extent.getMargin = function(extent) ，获取长加宽</li>
+<li>ol.extent.getSize = function(extent),获取宽和长</li>
+<li>ol.extent.getTopLeft = function(extent)获取x最小,y最大的点</li>
+<li>ol.extent.getTopRight = function(extent)获取x,y最大的点</li>
+<li>ol.extent.getWidth = function(extent),获取宽度</li>
+<li>ol.extent.intersects = function(extent1, extent2)判断extent1和extent2是否相交</li>
+<li>ol.extent.isEmpty = function(extent) 判断是否为空</li>
+<li>ol.extent.returnOrUpdate = function(extent, opt_extent)使用extent，更新opt_extent，opt_extent为空直接返回extent</li>
+<li>ol.extent.scaleFromCenter = function(extent, value)缩放指定的倍数</li>
+<li>ol.extent.intersectsSegment = function(extent, start, end)判断以start为起点,以end为终点的线段和extent是否相交</li>
+<li>ol.extent.applyTransform = function(extent, transformFn, opt_extent)转换extent坐标<h1 id="math"><a href="#math" class="headerlink" title="math"></a>math</h1></li>
+<li>ol.math.clamp = function(value, min, max)计算中间值</li>
+<li>ol.math.cosh，双曲余弦函数</li>
+<li>ol.math.roundUpToPowerOfTwo = function(x)<h1 id="obj"><a href="#obj" class="headerlink" title="obj"></a>obj</h1></li>
+<li>ol.obj.assign=function(target, var_sources),合并var_sources的属性到target中，存在的覆盖，不存在的新建</li>
+<li>ol.obj.clear = function(object)清空object</li>
+<li>ol.obj.getValues = function(object)获取object的值作为数组</li>
+<li>ol.obj.isEmpty = function(object) 判断对象是否为空<h1 id="resolutionconstraint"><a href="#resolutionconstraint" class="headerlink" title="resolutionconstraint"></a>resolutionconstraint</h1></li>
+<li>ol.ResolutionConstraint.createSnapToResolutions = function(resolutions)，返回一个函数,该函数根据传入的分辨率判断该分辨率的放大级别</li>
+<li>ol.ResolutionConstraint.createSnapToPower = function(power, maxResolution, opt_maxLevel),返回一个函数<h1 id="rotationconstraint"><a href="#rotationconstraint" class="headerlink" title="rotationconstraint"></a>rotationconstraint</h1></li>
+<li>ol.RotationConstraint.disable = function(rotation, delta)返回0</li>
+<li>ol.RotationConstraint.none = function(rotation, delta)返回rotation+delta</li>
+<li>ol.RotationConstraint.createSnapToN = function(n) </li>
+<li>ol.RotationConstraint.createSnapToZero = function(opt_tolerance)<h1 id="size"><a href="#size" class="headerlink" title="size"></a>size</h1></li>
+<li>ol.size.buffer = function(size, buffer, opt_size),扩展size</li>
+<li>ol.size.hasArea = function(size)，判断size是否有范围</li>
+<li>ol.size.scale = function(size, ratio, opt_size),对size缩放一定的比例</li>
+<li>ol.size.toSize = function(size, opt_size)转换为size<h1 id="transform"><a href="#transform" class="headerlink" title="transform"></a>transform</h1></li>
+<li>ol.transform.create = function()，创建空的转换器</li>
+<li>ol.transform.reset = function(transform)，重置为初始的转换器</li>
+<li>ol.transform.multiply = function(transform1, transform2) </li>
+<li>ol.transform.set = function(transform, a, b, c, d, e, f),将给定的值设置到转换器</li>
+<li>ol.transform.setFromArray = function(transform1, transform2),将transform2复制到transform1</li>
+<li>ol.transform.apply = function(transform, coordinate),使用给定的转换器，转换坐标</li>
+<li>ol.transform.rotate = function(transform, angle),将给定的坐标转换一定的角度</li>
+<li>ol.transform.scale = function(transform, x, y),将给定的坐标缩放一定的比例</li>
+<li>ol.transform.translate = function(transform, dx, dy),将给定的坐标平移一定的比例</li>
+<li>ol.transform.compose = function(transform, dx1, dy1, sx, sy, angle, dx2, dy2)，构造转换器</li>
+<li>ol.transform.invert = function(transform),反转转换器</li>
+<li>ol.transform.determinant = function(mat)，转换因子</li>
+</ul>
+</div><div class="tags"></div><div class="post-share"><div class="bdsharebuttonbox"><span style="float:left;line-height: 28px;height: 28px;font-size:16px;font-weight:blod">分享到：</span><a href="#" data-cmd="more" class="bds_more"></a><a href="#" data-cmd="mshare" title="分享到一键分享" class="bds_mshare"></a><a href="#" data-cmd="fbook" title="分享到Facebook" class="bds_fbook"></a><a href="#" data-cmd="twi" title="分享到Twitter" class="bds_twi"></a><a href="#" data-cmd="linkedin" title="分享到linkedin" class="bds_linkedin"></a><a href="#" data-cmd="youdao" title="分享到有道云笔记" class="bds_youdao"></a><a href="#" data-cmd="evernotecn" title="分享到印象笔记" class="bds_evernotecn"></a><a href="#" data-cmd="weixin" title="分享到微信" class="bds_weixin"></a><a href="#" data-cmd="qzone" title="分享到QQ空间" class="bds_qzone"></a><a href="#" data-cmd="tsina" title="分享到新浪微博" class="bds_tsina"></a></div></div><div class="post-nav"><a href="/2018/03/15/OpenLayers-事件注册分发过程源码分析(二)/" class="pre">OpenLayers-事件注册分发过程源码分析(二)</a><a href="/2018/03/14/OpenLayers-View源码分析/" class="next">OpenLayers-View源码分析</a></div><div id="comments"></div></div></div></div><div class="layout-r"><div id="sidebar"><div class="search-pla"></div><div id="toc" class="widget"><div class="widget-title"><i class="fa fa-fei">文章目录</i></div><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#disposable"><span class="toc-text">disposable</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#observable"><span class="toc-text">observable</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#object"><span class="toc-text">object</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#array类"><span class="toc-text">array类</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#attribution"><span class="toc-text">attribution</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#centerconstraint"><span class="toc-text">centerconstraint</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#collection"><span class="toc-text">collection</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#coordinate"><span class="toc-text">coordinate</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#extent"><span class="toc-text">extent</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#math"><span class="toc-text">math</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#obj"><span class="toc-text">obj</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#resolutionconstraint"><span class="toc-text">resolutionconstraint</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#rotationconstraint"><span class="toc-text">rotationconstraint</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#size"><span class="toc-text">size</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#transform"><span class="toc-text">transform</span></a></li></ol></div><div class="widget"><div class="widget-title"><i class="fa fa-xie"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/05/20/springXML文件解析流程(一)/">springXML文件解析流程(一)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/17/OpenLayers-数据源类源码分析(八)/">OpenLayers-数据源类源码分析(八)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/17/OpenLayers-地图图层类源码分析(七)/">OpenLayers-地图图层类源码分析(七)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/17/OpenLayers-地图交互事件源码分析(六)/">OpenLayers-地图交互事件源码分析(六)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/17/OpenLayers-地图交互事件源码分析(五)/">OpenLayers-地图交互事件源码分析(五)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/16/OpenLayers-pointer事件注册分发过程源码分析(四)/">OpenLayers-pointer事件注册分发过程源码分析(四)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/15/OpenLayers-map事件注册分发过程源码分析(三)/">OpenLayers-map事件注册分发过程源码分析(三)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/15/OpenLayers-事件注册分发过程源码分析(二)/">OpenLayers-事件注册分发过程源码分析(二)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/14/OpenLayers-工具类分析(一)/">OpenLayers-工具类分析(一)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/14/OpenLayers-View源码分析/">OpenLayers-View源码分析</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-gui"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mybatis/">mybatis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/openlayers/">openlayers</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/spring/">spring</a><span class="category-list-count">1</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-biao"> 标签</i></div><div class="tagcloud"></div></div><div class="widget"><div class="widget-title"><i class="fa fa-archive"> 归档</i></div><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-you"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div></div><a id="totop" href="#top"></a><div id="footer"><div class="footer-info"><p><a href="/baidusitemap.xml">Baidu Site Haritası</a> |  <a href="/atom.xml">订阅</a> |  <a href="/about/">关于</a></p><p>本站总访问量：<i id="busuanzi_container_site_pv"><i id="busuanzi_value_site_pv"></i></i>次</p><p><span> Copyright &copy;<a href="/." rel="nofollow">ACC.</a></span><span> Theme by<a rel="nofollow" target="_blank" href="https://github.com/chaooo/hexo-theme-BlueLake"> BlueLake.</a></span><span> Count by<a href="http://busuanzi.ibruce.info/"> busuanzi.</a></span><span> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a></span></p></div></div></div><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><script type="text/javascript" src="/js/search.json.js?v=2.0.1"></script><script type="text/javascript" src="/js/toctotop.js?v=2.0.1" async></script><script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","weixin","tsina","qzone","linkedin","fbook","twi","print","renren","sqq","evernotecn","bdysc","tqq","tqf","bdxc","kaixin001","tieba","douban","bdhome","thx","ibaidu","meilishuo","mogujie","diandian","huaban","duitang","hx","fx","youdao","sdo","qingbiji","people","xinhua","mail","isohu","yaolan","wealink","ty","iguba","h163","copy"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["tsina","qzone","weixin","fbook","twi","linkedin","youdao","evernotecn","mshare"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["tsina","qzone","weixin","fbook","twi","linkedin","youdao","evernotecn","mshare"]}};with(document)0[(getElementsByTagName('head')[0]||head).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script></body></html>
