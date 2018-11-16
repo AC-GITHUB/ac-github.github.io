@@ -73,7 +73,16 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: BlueLake
+theme: next
+# RSS订阅
+feed:
+  type: atom
+  path: atom.xml
+  limit: 20
+  hub:
+  content:
+  content_limit: 140
+  content_limit_delim: ' '
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
@@ -83,22 +92,17 @@ deploy:
      github: https://github.com/AC-GITHUB/ac-github.github.io.git
      gitee: https://gitee.com/coder2015/Coder2015.git
   branch: master
-jsonContent:
-  meta: false
-  pages: false
-  posts:
-    title: true
-    date: true
-    path: true
-    text: true
-    raw: false
-    content: false
-    slug: false
-    updated: false
-    comments: false
-    link: false
-    permalink: false
-    excerpt: false
-    categories: false
-    tags: true
+search:
+  path: search.xml
+  field: post
+  format: html
+  limit: 10000
+symbols_count_time:
+  symbols: true
+  time: true
+  total_symbols: true
+  total_time: true
+# Social links
+social:
+  GitHub: https://github.com/AC-GITHUB
  
