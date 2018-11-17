@@ -3,11 +3,11 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 艾晨博客
-subtitle: 艾晨博客
-description: 这是艾晨博客,主要记录开发知识
+title: AC Blog
+subtitle: 
+description: 主要记录开发知识
 keywords: AC
-author: ACC
+author: AC
 language: zh-CN
 timezone: Asia/Shanghai
 
