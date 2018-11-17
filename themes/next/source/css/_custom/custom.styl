@@ -10,13 +10,62 @@ body {
   /* 设置背景颜色，背景图加载过程中会显示背景色 */
   background-color: rgba(0, 0, 0, 0.5);
 }
-.content {
-            border-radius: 20px;
-            padding: 30px 60px 30px 60px;
-            background:rgba(255, 255, 255, 0.8) none repeat scroll !important;
-         }
-#sidebar {
-            background:rgba(255, 255, 255, 0.8) none repeat scroll !important;
+#comments {
+  margin-top: 12px;
+  position: relative;
+  a {
+    border: none;
+  }
+}
+
+img.emojione {
+  display: inline-block;
+}
+
++mobile() {
+  .post-copyright {
+    font-size: 14px;
+  }
+}
+
+.headband { display: none; }
+
+.no-doodle-support {
+  background: $gainsboro;
+
+  css-doodle {
+    display: none;
+  }
+
+  .back-to-top, .sidebar, {
+    background: $gainsboro;
+  }
+}
+
+.doodle-support {
+  .post-block, .header-inner, .sidebar-inner, .comments {
+    opacity: .9 !important;
+  }
+
+  .header {
+    z-index: 1;
+  }
+
+  .footer a {
+    color: white;
+    opacity: .9;
+  }
+
+  .back-to-top {
+    color: rgba(white, .8);
+  }
+}
+#sidebar, .header-inner, .comments {
+    opacity: .9 !important;
+}
+.post-block{
+    opacity: .9 !important;
+	//background-color: rgba(207, 232, 204, 1);
 }
 .post-body p a{
   color: #0593d3; //原始链接颜色
