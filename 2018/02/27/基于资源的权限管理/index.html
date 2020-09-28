@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ac-github.github.io","root":"/","scheme":"Gemini","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="本文讨论以角色概念进行的权限管理策略及主要以基于角色的机制进行权限管理是远远不够的。同时我将讨论一种我认为更好的权限管理方式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于资源的权限管理(Resource-Based Access Control)">
+<meta property="og:url" content="https://ac-github.github.io/2018/02/27/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="AC Blog">
+<meta property="og:description" content="本文讨论以角色概念进行的权限管理策略及主要以基于角色的机制进行权限管理是远远不够的。同时我将讨论一种我认为更好的权限管理方式">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-02-27T05:50:39.000Z">
+<meta property="article:modified_time" content="2020-09-28T15:19:42.665Z">
+<meta property="article:author" content="AC">
+<meta property="article:tag" content="AC">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ac-github.github.io/2018/02/27/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>基于资源的权限管理(Resource-Based Access Control) | AC Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">AC Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%A7%92%E8%89%B2"><span class="nav-number">1.</span> <span class="nav-text">什么是角色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E8%A7%92%E8%89%B2%E7%9A%84%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6%EF%BC%88Role-BasedAccess-Control%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">基于角色的访问控制（Role-BasedAccess Control）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%98%BE%E5%BC%8F%E5%9C%B0%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6%EF%BC%9A%E6%9B%B4%E5%A5%BD%E7%9A%84%E9%80%89%E6%8B%A9"><span class="nav-number">3.</span> <span class="nav-text">显式地访问控制：更好的选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RBAC%E6%96%B0%E8%A7%A3%EF%BC%9AResource-Based-Access-Control"><span class="nav-number">4.</span> <span class="nav-text">RBAC新解：Resource-Based Access Control</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%B0%E5%AE%9E%E4%B8%96%E7%95%8C%E7%9A%84%E4%BE%8B%E5%AD%90%EF%BC%9AApache-Shiro"><span class="nav-number">5.</span> <span class="nav-text">现实世界的例子：Apache Shiro</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="AC"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">AC</p>
+  <div class="site-description" itemprop="description">主要记录开发知识</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AC-GITHUB" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AC-GITHUB" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll animated">
+    <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://cn.vuejs.org/" title="https:&#x2F;&#x2F;cn.vuejs.org&#x2F;" rel="noopener" target="_blank">vue</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://jquery.com/" title="https:&#x2F;&#x2F;jquery.com&#x2F;" rel="noopener" target="_blank">jquery</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://openlayers.org/" title="http:&#x2F;&#x2F;openlayers.org&#x2F;" rel="noopener" target="_blank">openlayers</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://spatialreference.org/" title="http:&#x2F;&#x2F;spatialreference.org&#x2F;" rel="noopener" target="_blank">spatialreference</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.processon.com/" title="https:&#x2F;&#x2F;www.processon.com&#x2F;" rel="noopener" target="_blank">processon</a>
+        </li>
+    </ul>
+  </div>
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/AC-GITHUB" class="github-corner" title="GitHub" aria-label="GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ac-github.github.io/2018/02/27/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="AC">
+      <meta itemprop="description" content="主要记录开发知识">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="AC Blog">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          基于资源的权限管理(Resource-Based Access Control)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-02-27 13:50:39" itemprop="dateCreated datePublished" datetime="2018-02-27T13:50:39+08:00">2018-02-27</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-09-28 23:19:42" itemprop="dateModified" datetime="2020-09-28T23:19:42+08:00">2020-09-28</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">本文讨论以角色概念进行的权限管理策略及主要以基于角色的机制进行权限管理是远远不够的。同时我将讨论一种我认为更好的权限管理方式</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本文讨论以角色概念进行的权限管理策略及主要以基于角色的机制进行权限管理是远远不够的。同时我将讨论一种我认为更好的权限管理方式。</p>
+<h3 id="什么是角色"><a href="#什么是角色" class="headerlink" title="什么是角色"></a>什么是角色</h3><p>&emsp;&emsp;当说到程序的权限管理时，人们往往想到角色这一概念。角色是代表一系列可执行的操作或责任的实体，用于限定你在软件系统中能做什么、不能做什么。用户帐号往往与角色相关联，因此，一个用户在软件系统中能做什么取决于与之关联的各个角色。<br>&emsp;&emsp;例如，一个用户以关联了”项目管理员”角色的帐号登录系统，那这个用户就可以做项目管理员能做的所有事情――如列出项目中的应用、管理项目组成员、产生项目报表等。<br>&emsp;&emsp;从这个意义上来说，角色更多的是一种行为的概念：它表示用户能在系统中进行的操作。</p>
+<h3 id="基于角色的访问控制（Role-BasedAccess-Control）"><a href="#基于角色的访问控制（Role-BasedAccess-Control）" class="headerlink" title="基于角色的访问控制（Role-BasedAccess Control）"></a>基于角色的访问控制（Role-BasedAccess Control）</h3><p>&emsp;&emsp;既然角色代表了可执行的操作这一概念，一个合乎逻辑的做法是在软件开发中使用角色来控制对软件功能和数据的访问。你可能已经猜到，这种权限控制方法就叫基于角色的访问控制(Role-Based Access Control)，或简称为RBAC。有两种正在实践中使用的RBAC访问控制方式：隐式(模糊)的方式和显示(明确)的方式。<br>&emsp;&emsp;今天依旧有大量的软件应用是使用隐式的访问控制方式。但我肯定的说，显示的访问控制方式更适合于当前的软件应用。隐式的访问控制前面提到，角色代表一系列的可执行的操作。但我们如何知道一个角色到底关联了哪些可执行的操作呢？<br>&emsp;&emsp; 答案是：目前的大多数应用，你并能不明确的知道一个角色到底关联了哪些可执行操作。可能你心里是清楚的（你知道一个有”管理员”角色的用户可以锁定用户帐号、进行系统配置；一个关联了”消费者”这一角色的用户可在网站上进行商品选购），但这些系统并没有明确定义一个角色到底包含了哪些可执行的行为。<br>&emsp;&emsp;拿”项目管理员”来说，系统中并没有对”项目管理员”能进行什么样的操作进行明确定义，它仅是一个字符串名词。开发人员通常将这个名词写在程序里以进行访问控制。例如，判断一个用户是否能查看项目报表，程序员可能会编码如下：<br>代码块1. 隐式地基于角色的权限控制:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (user.hasRole(<span class="string">&quot;Project Manager&quot;</span>) ) &#123;</span><br><span class="line"><span class="comment">//show theproject report button</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="comment">//don&#x27;t showthe button</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;在上面的示例代表中，开发人员判断用户是否有”项目管理员”角色来决定是否显示查看项目报表按钮。请注意上面的代码，它并没有明确语句来定义”项目管理员”这一角色到底包含哪些可执行的行为，它只是假设一个关联了项目管理员角色的用户可查看项目报表，而开发人员也是基于这一假设来写 if/else 语句。脆弱的权限策略。像上面的权限访问控制是非常脆弱的。一个极小的权限方面的需求的变动都可能导致上面的代码需要重新修改。<br>&emsp;&emsp;举例来说，假如某一天这个开发团队被告知：“哦，顺便说一下，我们需要一个’部门管理员’角色，他们也可以查看项目报表。请做到这一点。”这种情况下，开发人员需要找到上面的代码块并将其修改为：<br>代码块2. 修改过的隐式的基于角色的权限控制:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (user.hasRole(<span class="string">&quot;Project Manager&quot;</span>) || user.hasRole(<span class="string">&quot;Department Manager&quot;</span>) ) &#123;</span><br><span class="line"><span class="comment">//show the project report button</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;<span class="comment">//don&#x27;t show the button&#125;</span></span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;随后，开发人员需要更新他的测试用例、重新编译系统，还可能需要重走软件质量控制(QA)流程，然后再重新部署上线。这一切仅仅是因为一个微小的权限方面的需求变动！<br>后面如果需求方又回来告诉你说我们又有另一个角色可查看报表，或是前面关于”部门管理员可查看报表”的需求不再需要了，岂不把人累死了。<br>&emsp;&emsp;如果需求方要求动态地创建、删除角色以便他们自己配置角色，又该如何应对呢？像上面的情况，这种隐式的(静态字符串)形式的基于角色的访问控制方式难以满足需求。理想的情况是如果权限需求变动不需要修改任何代码。怎样才能做到这一点呢？</p>
+<h3 id="显式地访问控制：更好的选择"><a href="#显式地访问控制：更好的选择" class="headerlink" title="显式地访问控制：更好的选择"></a>显式地访问控制：更好的选择</h3><p>&emsp;&emsp;从上面的例子我们看到，当权限需求发生变动时，隐式的权限访问控制方式会给程序开发带来沉重的负担。如果能有一种方式在权限需求发生变化时不需要去修改代码就能满足需求那就好了。理解的情况是，即使是正在运行的系统，你也可以修改权限策略却又不影响最终用户的使用。当你发现某些错误的或危险的安全策略时，你可以迅速地修改策略配置，同时你的系统还能正常使用，而不需要重构代码重新部署系统。<br>&emsp;&emsp;怎样才能达到上面的理想效果呢？我们可以通过显式的(明确的)界定我们在应用中能做的操作来进行。回顾上面隐式的权限控制的例子，思考一下这些代码最终的目的，想一下它们最终是要做什么样的控制？<br>&emsp;&emsp;从根本上说，这些代码最终是在保护资源(项目报表)，是要界定一个用户能对这些资源进行什么样的操作(查看/修改)。当我们将权限访问控制分解到这种最原始的层次，我们就可以用一种更细粒度(更富有弹性)的方式来表达权限控制策略。<br>&emsp;&emsp;我们可以修改上面的代码块，以基于资源的语义来更有效地进行权限访问控制：<br>代码块3. 显式的权限控制:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (user.isPermitted(<span class="string">&quot;projectReport:view:12345&quot;</span>)) &#123;</span><br><span class="line"><span class="comment">//show the project report button</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;<span class="comment">//don&#x27;t show the button&#125;</span></span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;上面的例子中，我们可明确地看到我们是在控制什么。不要太在意冒号分隔的语法，这仅是一个例子，重点是上面的语句明确地表示了“如果当前用户允许查看编号为12345的项目报表，则显示项目报表按钮”。也就是说，我们明确地说明了一个用户帐号可对一个的资源实例进行的具体的操作。<br>&emsp;&emsp;为什么说这种方式更好。上面最后的示例代码块与前面的代码的主要区别：最后的代码块是基于什么是受保护的，而不是谁可能有能力做什么。看似简单的区别，但后者对系统开发及部署有着深刻的影响：</p>
+<ul>
+<li>更少的代码重构：我们是基于系统的功能(系统的资源及对资源的操作)来进行权限控制，而相应来说，系统的功能需求一旦确定下来后，一段时间内对它的改动相应还是比较少的。只是当系统的功能需求改变时，才会涉及到权限代码的改变。例如上面提到的查看项目报表的功能，显式的权限控制方式不会像传统隐式的RBAC权限控制那样因不同的用户/角色要进行这个操作就需要重构代码；只要这个功能存在，显式的方式的权限控制代码是不需要改变的。</li>
+<li>更直观：保护资源对象、控制对资源对象的操作(对象及对象的行为)，这样的权限控制方式更符合人们的思想习惯。正因为符合这种直观的思维方式，面向对象的编辑思想及REST通信模型变得非常成功。</li>
+<li>更有弹性：上面的示例代码中没有写死哪些用户、组或角色可对资源进行什么操作。这意味着它可支持任何安全模型的设计。例如，可以将操作（权限）直接分配给用户，或者他们可以被分配到一个角色，然后再将角色与用户关联，或者将多个角色关联到组(group)上，等等。你完全可以根据应用的特点定制权限模型。</li>
+<li>外部安全策略管理：由于源代码只反映资源和行为，而不是用户、组和角色，这样资源/行为与用户、组、角色的关联可以通过外部的模块或专用工具或管理控制台来完成。这意味着在权限需求变化时，开发人员并不需要花费时间来修改代码，业务分析师甚至最终用户就可以通过相应的管理工具修改权限策略配置。</li>
+<li>可在运行环境做修改：因为基于资源的权限控制代码并不依赖于行为的主体(如组、角色、用色)，你并没有将行为的主体的字符名词写在代码中，所以你甚至可以在程序运行的时候通过修改主体能对资源进行的操作这样一些方式，通过配置的方式就可应对权限方面需求的变动，再也不需要像隐式的RBAC方式那样需要重构代码。<h3 id="RBAC新解：Resource-Based-Access-Control"><a href="#RBAC新解：Resource-Based-Access-Control" class="headerlink" title="RBAC新解：Resource-Based Access Control"></a>RBAC新解：Resource-Based Access Control</h3>&emsp;&emsp;对于上面列出的诸多好处，我重点要说是这种显式的机制带给我们的富有弹性的权限模型。如果你仍想保留或模拟传统的基于角色的权限访问控制，你可以将权限(可执行的操作)直接分配给某个角色。这种情况下，你依旧是在使用基于角色的权限访问控制方式(不同之处在于你需要明确地界定角色中的权限，而不是传统的使用角色字符串隐式地进行权限控制)。<br>&emsp;&emsp;但在这种新的模型下，已不必再局限于角色了。你可以将权限直接分配给用户、组或其它你觉得可以的对象。<br>因为上面显式地、基于资源的权限访问控制的诸多好处，或许可以给RBAC一个新的定义：“Resource-BasedAccess Control”。只是我的一个想法：）</li>
+</ul>
+<h3 id="现实世界的例子：Apache-Shiro"><a href="#现实世界的例子：Apache-Shiro" class="headerlink" title="现实世界的例子：Apache Shiro"></a>现实世界的例子：Apache Shiro</h3><p>&emsp;&emsp;如果你好奇现实世界有没有被多个系统使用的基于资源的权限控制框架，你可以了解一下Apache Shiro。它是一个java平台的现代权限管理框架。通过它的权限(Permission)概念，Shiro很好地支持基于资源的权限访问控制。<br>当然，并不需要借用Shiro来理解本文所说的一些概念，但Shiro对理解本文所讨论的概念及示例有一定的帮助。<br>（原文地址：<a target="_blank" rel="noopener" href="http://www.katasoft.com/blog/2011/05/09/new-rbac-resource-based-access-control%EF%BC%89">http://www.katasoft.com/blog/2011/05/09/new-rbac-resource-based-access-control）</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="AC 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="AC 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/02/27/%E8%AE%BE%E7%BD%AE%E8%BE%93%E5%87%BAJDK%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E7%94%9F%E6%88%90%E7%9A%84%E4%BB%A3%E7%90%86%E7%B1%BB/" rel="prev" title="设置输出JDK动态代理生成的代理类">
+                  <i class="fa fa-chevron-left"></i> 设置输出JDK动态代理生成的代理类
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/03/12/java%E5%90%8E%E7%AB%AF%E6%8A%80%E8%83%BD%E6%A0%91/" rel="next" title="java后端技能树">
+                  java后端技能树 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+  
+  
+  
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">AC</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

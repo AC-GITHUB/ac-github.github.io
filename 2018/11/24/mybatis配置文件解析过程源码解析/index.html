@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ac-github.github.io","root":"/","scheme":"Gemini","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="本文描述mybatsi的配置文件以及mapper映射文件的解析过程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mybatis配置文件解析过程源码解析">
+<meta property="og:url" content="https://ac-github.github.io/2018/11/24/mybatis%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E8%BF%87%E7%A8%8B%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:site_name" content="AC Blog">
+<meta property="og:description" content="本文描述mybatsi的配置文件以及mapper映射文件的解析过程">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-11-24T13:47:32.000Z">
+<meta property="article:modified_time" content="2018-11-24T13:47:32.000Z">
+<meta property="article:author" content="AC">
+<meta property="article:tag" content="mybatis">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ac-github.github.io/2018/11/24/mybatis%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E8%BF%87%E7%A8%8B%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>mybatis配置文件解析过程源码解析 | AC Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">AC Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="AC"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">AC</p>
+  <div class="site-description" itemprop="description">主要记录开发知识</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AC-GITHUB" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AC-GITHUB" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll animated">
+    <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://cn.vuejs.org/" title="https:&#x2F;&#x2F;cn.vuejs.org&#x2F;" rel="noopener" target="_blank">vue</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://jquery.com/" title="https:&#x2F;&#x2F;jquery.com&#x2F;" rel="noopener" target="_blank">jquery</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://openlayers.org/" title="http:&#x2F;&#x2F;openlayers.org&#x2F;" rel="noopener" target="_blank">openlayers</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://spatialreference.org/" title="http:&#x2F;&#x2F;spatialreference.org&#x2F;" rel="noopener" target="_blank">spatialreference</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.processon.com/" title="https:&#x2F;&#x2F;www.processon.com&#x2F;" rel="noopener" target="_blank">processon</a>
+        </li>
+    </ul>
+  </div>
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/AC-GITHUB" class="github-corner" title="GitHub" aria-label="GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ac-github.github.io/2018/11/24/mybatis%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E8%BF%87%E7%A8%8B%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="AC">
+      <meta itemprop="description" content="主要记录开发知识">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="AC Blog">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          mybatis配置文件解析过程源码解析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-11-24 21:47:32" itemprop="dateCreated datePublished" datetime="2018-11-24T21:47:32+08:00">2018-11-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/mybatis/" itemprop="url" rel="index"><span itemprop="name"> mybatis</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">本文描述mybatsi的配置文件以及mapper映射文件的解析过程</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <ol>
+<li>首先查看mybatis的入口SqlSessionFactoryBuilder<figure class="highlight java"><figcaption><span>SqlSessionFactoryBuilder</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//加载mybatis-config.xml</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> SqlSessionFactory <span class="title">build</span><span class="params">(Reader reader)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.build((Reader)reader, (String)<span class="keyword">null</span>, (Properties)<span class="keyword">null</span>);</span><br><span class="line">   &#125;</span><br><span class="line">    <span class="comment">//建立一个SqlSessionFactory</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SqlSessionFactory <span class="title">build</span><span class="params">(Reader reader, String environment, Properties properties)</span> </span>&#123;</span><br><span class="line">        SqlSessionFactory var5;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//初始化一个XMLConfigBuilder</span></span><br><span class="line">            XMLConfigBuilder parser = <span class="keyword">new</span> XMLConfigBuilder(reader, environment, properties);</span><br><span class="line">           <span class="comment">//建立SqlSessionFactory用于生成SqlSession，重点方法parser.parse()</span></span><br><span class="line">            var5 = <span class="keyword">this</span>.build(parser.parse());</span><br><span class="line">        &#125; </span><br><span class="line">        <span class="keyword">return</span> var5;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
+<li>接下来重点分析XMLConfigBuilder parse()方法<figure class="highlight java"><figcaption><span>XMLConfigBuilder</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//先查看构造初始化方法</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">XMLConfigBuilder</span><span class="params">(XPathParser parser, String environment, Properties props)</span> </span>&#123;</span><br><span class="line">         <span class="comment">//new 一个Configuration</span></span><br><span class="line">        <span class="keyword">super</span>(<span class="keyword">new</span> Configuration());</span><br><span class="line">         <span class="comment">//设置的默认的localReflectorFactory</span></span><br><span class="line">        <span class="keyword">this</span>.localReflectorFactory = <span class="keyword">new</span> DefaultReflectorFactory();</span><br><span class="line">        ErrorContext.instance().resource(<span class="string">&quot;SQL Mapper Configuration&quot;</span>);</span><br><span class="line">        <span class="keyword">this</span>.configuration.setVariables(props);</span><br><span class="line">        <span class="keyword">this</span>.parsed = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">this</span>.environment = environment;</span><br><span class="line">        <span class="keyword">this</span>.parser = parser;</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//接下来查看parse方法</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Configuration <span class="title">parse</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//判断是否已经解析过了</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.parsed) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> BuilderException(<span class="string">&quot;Each XMLConfigBuilder can only be used once.&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">this</span>.parsed = <span class="keyword">true</span>;</span><br><span class="line">           <span class="comment">//解析配置mybatis-config.xml,this.parse是XPathParser用于从获取xml的节点</span></span><br><span class="line">            <span class="keyword">this</span>.parseConfiguration(<span class="keyword">this</span>.parser.evalNode(<span class="string">&quot;/configuration&quot;</span>));</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>.configuration;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">parseConfiguration</span><span class="params">(XNode root)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//解析配置的properties节点，解析后放置到Configuration的variables属性中</span></span><br><span class="line">            <span class="keyword">this</span>.propertiesElement(root.evalNode(<span class="string">&quot;properties&quot;</span>));</span><br><span class="line">            <span class="comment">//解析typeAliases节点，解析后加入到Configuration的typeAliasRegistry</span></span><br><span class="line">            <span class="keyword">this</span>.typeAliasesElement(root.evalNode(<span class="string">&quot;typeAliases&quot;</span>));</span><br><span class="line">           <span class="comment">//解析plugins节点，plugin是实现了Interceptor接口的类,解析后加入到Configuration的interceptorChain中</span></span><br><span class="line">            <span class="keyword">this</span>.pluginElement(root.evalNode(<span class="string">&quot;plugins&quot;</span>));</span><br><span class="line">            <span class="comment">//解析objectFactory节点，解析后设置Configuration的objectFactory属性，未配置时默认DefaultObjectFactory</span></span><br><span class="line">            <span class="keyword">this</span>.objectFactoryElement(root.evalNode(<span class="string">&quot;objectFactory&quot;</span>));</span><br><span class="line">            <span class="comment">//解析objectWrapperFactory节点，解析后设置Configuration的objectWrapperFactory,未配置时默认DefaultObjectWrapperFactory</span></span><br><span class="line">            <span class="keyword">this</span>.objectWrapperFactoryElement(root.evalNode(<span class="string">&quot;objectWrapperFactory&quot;</span>));</span><br><span class="line">           <span class="comment">//解析reflectionFactory节点，解析后设置Configuration的reflectorFactory，未配置时默认DefaultReflectorFactory</span></span><br><span class="line">           <span class="keyword">this</span>.reflectionFactoryElement(root.evalNode(<span class="string">&quot;reflectionFactory&quot;</span>));</span><br><span class="line">           <span class="comment">//解析settings节点,获取settings的值设置Configuration对应的属性,未配置时使用默认值</span></span><br><span class="line">            <span class="keyword">this</span>.settingsElement(root.evalNode(<span class="string">&quot;settings&quot;</span>));</span><br><span class="line">             <span class="comment">//解析environments，使用默认值设置Configuration的environment属性</span></span><br><span class="line">            <span class="keyword">this</span>.environmentsElement(root.evalNode(<span class="string">&quot;environments&quot;</span>));</span><br><span class="line">             <span class="comment">//解析databaseIdProvider节点,解析后,设置Configuration的databaseId属性</span></span><br><span class="line">            <span class="keyword">this</span>.databaseIdProviderElement(root.evalNode(<span class="string">&quot;databaseIdProvider&quot;</span>));</span><br><span class="line">             <span class="comment">//解析typeHandlers节点,提供jdbc类型和java类型的转换，解析后添加到Configuration的typeHandlerRegistry属性</span></span><br><span class="line">            <span class="keyword">this</span>.typeHandlerElement(root.evalNode(<span class="string">&quot;typeHandlers&quot;</span>));</span><br><span class="line">            <span class="comment">//最重要的部分解析mapper文件</span></span><br><span class="line">            <span class="keyword">this</span>.mapperElement(root.evalNode(<span class="string">&quot;mappers&quot;</span>));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception var3) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> BuilderException(<span class="string">&quot;Error parsing SQL Mapper Configuration. Cause: &quot;</span> + var3, var3);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//解析mapper文件</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">mapperElement</span><span class="params">(XNode parent)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (parent != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">//获取所有的子节点</span></span><br><span class="line">            Iterator i$ = parent.getChildren().iterator();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">while</span>(<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="keyword">while</span>(i$.hasNext()) &#123;</span><br><span class="line">                    XNode child = (XNode)i$.next();</span><br><span class="line">                    String resource;</span><br><span class="line">                     <span class="comment">//判断mapper类型，调用不同的解析方法，重点查看resource类型的节点解析</span></span><br><span class="line">                    <span class="keyword">if</span> (<span class="string">&quot;package&quot;</span>.equals(child.getName())) &#123;</span><br><span class="line">                        resource = child.getStringAttribute(<span class="string">&quot;name&quot;</span>);</span><br><span class="line">                        <span class="keyword">this</span>.configuration.addMappers(resource);</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                       <span class="comment">//获取节点属性</span></span><br><span class="line">                        resource = child.getStringAttribute(<span class="string">&quot;resource&quot;</span>);<span class="comment">//获取mapper.xml的路径</span></span><br><span class="line">                        String url = child.getStringAttribute(<span class="string">&quot;url&quot;</span>);</span><br><span class="line">                        String mapperClass = child.getStringAttribute(<span class="string">&quot;class&quot;</span>);</span><br><span class="line">                        XMLMapperBuilder mapperParser;</span><br><span class="line">                        InputStream inputStream;</span><br><span class="line">                        <span class="keyword">if</span> (resource != <span class="keyword">null</span> &amp;&amp; url == <span class="keyword">null</span> &amp;&amp; mapperClass == <span class="keyword">null</span>) &#123;</span><br><span class="line">                            ErrorContext.instance().resource(resource);</span><br><span class="line">                            inputStream = Resources.getResourceAsStream(resource);</span><br><span class="line">                            <span class="comment">//解析mapper.xml，重点</span></span><br><span class="line">                            mapperParser = <span class="keyword">new</span> XMLMapperBuilder(inputStream, <span class="keyword">this</span>.configuration, resource, <span class="keyword">this</span>.configuration.getSqlFragments());</span><br><span class="line">                            mapperParser.parse();</span><br><span class="line">                        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (resource == <span class="keyword">null</span> &amp;&amp; url != <span class="keyword">null</span> &amp;&amp; mapperClass == <span class="keyword">null</span>) &#123;</span><br><span class="line">                            ErrorContext.instance().resource(url);</span><br><span class="line">                            inputStream = Resources.getUrlAsStream(url);</span><br><span class="line">                            mapperParser = <span class="keyword">new</span> XMLMapperBuilder(inputStream, <span class="keyword">this</span>.configuration, url, <span class="keyword">this</span>.configuration.getSqlFragments());</span><br><span class="line">                            mapperParser.parse();</span><br><span class="line">                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                            <span class="keyword">if</span> (resource != <span class="keyword">null</span> || url != <span class="keyword">null</span> || mapperClass == <span class="keyword">null</span>) &#123;</span><br><span class="line">                                <span class="keyword">throw</span> <span class="keyword">new</span> BuilderException(<span class="string">&quot;A mapper element may only specify a url, resource or class, but not more than one.&quot;</span>);</span><br><span class="line">                            &#125;</span><br><span class="line"></span><br><span class="line">                            Class&lt;?&gt; mapperInterface = Resources.classForName(mapperClass);</span><br><span class="line">                            <span class="keyword">this</span>.configuration.addMapper(mapperInterface);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+2.接下来重点分析XMLMapperBuilder的parse方法<figure class="highlight java"><figcaption><span>XMLMapperBuilder</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//先查看构造初始化方法</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">XMLMapperBuilder</span><span class="params">(XPathParser parser, Configuration configuration, String resource, Map&lt;String, XNode&gt; sqlFragments)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(configuration);</span><br><span class="line">         <span class="comment">//新构造一个MapperBuilderAssistant</span></span><br><span class="line">        <span class="keyword">this</span>.builderAssistant = <span class="keyword">new</span> MapperBuilderAssistant(configuration, resource);</span><br><span class="line">        <span class="keyword">this</span>.parser = parser;</span><br><span class="line">        <span class="keyword">this</span>.sqlFragments = sqlFragments;</span><br><span class="line">        <span class="keyword">this</span>.resource = resource;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//接下来查看parse方法</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">parse</span><span class="params">()</span> </span>&#123;</span><br><span class="line">         <span class="comment">//判断是否解析过,判断Configuration的loadedResources属性里是否包含resource</span></span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">this</span>.configuration.isResourceLoaded(<span class="keyword">this</span>.resource)) &#123;</span><br><span class="line">             <span class="comment">//解析mapper文件,重点</span></span><br><span class="line">            <span class="keyword">this</span>.configurationElement(<span class="keyword">this</span>.parser.evalNode(<span class="string">&quot;/mapper&quot;</span>));</span><br><span class="line">             <span class="comment">//向Configuration的loadedResources属性添加resource的路径，以便于判断是否解析过mapper文件</span></span><br><span class="line">            <span class="keyword">this</span>.configuration.addLoadedResource(<span class="keyword">this</span>.resource);</span><br><span class="line">            <span class="keyword">this</span>.bindMapperForNamespace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">this</span>.parsePendingResultMaps();</span><br><span class="line">        <span class="keyword">this</span>.parsePendingChacheRefs();</span><br><span class="line">        <span class="keyword">this</span>.parsePendingStatements();</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">configurationElement</span><span class="params">(XNode context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">             <span class="comment">//获取mapper的namespace属性</span></span><br><span class="line">            String namespace = context.getStringAttribute(<span class="string">&quot;namespace&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (namespace != <span class="keyword">null</span> &amp;&amp; !namespace.equals(<span class="string">&quot;&quot;</span>)) &#123;</span><br><span class="line">                <span class="comment">//设置MapperBuilderAssistant的namespace属性</span></span><br><span class="line">                <span class="keyword">this</span>.builderAssistant.setCurrentNamespace(namespace);</span><br><span class="line">               <span class="comment">//解析cache-ref，结果添加到Configuration的cacheRefMap属性,key为mapper的namespace,value值为cache-ref的namespace</span></span><br><span class="line">                <span class="keyword">this</span>.cacheRefElement(context.evalNode(<span class="string">&quot;cache-ref&quot;</span>));</span><br><span class="line">                <span class="comment">//解析cache节点,结果添加到Configuration的caches属性,key为mapper的namespace,value为cache实现类，默认是PerpetualCache</span></span><br><span class="line">                <span class="keyword">this</span>.cacheElement(context.evalNode(<span class="string">&quot;cache&quot;</span>));</span><br><span class="line">               <span class="comment">//解析parameterMap节点,解析结果添加到Configuration的parameterMaps属性,key为parameterMap的id,value为parameterMap，对应的属性填充</span></span><br><span class="line">                <span class="keyword">this</span>.parameterMapElement(context.evalNodes(<span class="string">&quot;/mapper/parameterMap&quot;</span>));</span><br><span class="line">              <span class="comment">//解析resultMap节点,解析结果添加到Configuration的resultMaps属性，key为mapper的namespace加上resultMap的id保证唯一性,value为ResultMap对应属性填充</span></span><br><span class="line">                <span class="keyword">this</span>.resultMapElements(context.evalNodes(<span class="string">&quot;/mapper/resultMap&quot;</span>));</span><br><span class="line">                <span class="comment">//解析sql节点，解析结果添加到Configuration的sqlFragments属性,key为mapper的namespace加上sql的id保证唯一性,value为sql节点对应属性填充</span></span><br><span class="line">                <span class="keyword">this</span>.sqlElement(context.evalNodes(<span class="string">&quot;/mapper/sql&quot;</span>));</span><br><span class="line">              <span class="comment">//解析 select|insert|update|delete节点，解析结果添加到 Configuration的mappedStatements属性,</span></span><br><span class="line">			  key为mapper的namespace加上节点的id保证唯一性,value为MappedStatement节点对应属性填</span><br><span class="line">			  <span class="keyword">this</span>.buildStatementFromContext(context.evalNodes(<span class="string">&quot;select|insert|update|delete&quot;</span>));</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> BuilderException(<span class="string">&quot;Mapper&#x27;s namespace cannot be empty&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception var3) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> BuilderException(<span class="string">&quot;Error parsing Mapper XML. Cause: &quot;</span> + var3, var3);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//接下来查看parse方法中剩余的几个步骤</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">parse</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">this</span>.configuration.isResourceLoaded(<span class="keyword">this</span>.resource)) &#123;</span><br><span class="line">            <span class="keyword">this</span>.configurationElement(<span class="keyword">this</span>.parser.evalNode(<span class="string">&quot;/mapper&quot;</span>));</span><br><span class="line">            <span class="keyword">this</span>.configuration.addLoadedResource(<span class="keyword">this</span>.resource);</span><br><span class="line">			<span class="comment">//处理mapper.xml文件绑定的java接口，重点</span></span><br><span class="line">            <span class="keyword">this</span>.bindMapperForNamespace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//重新处理ResultMap有处理异常的ResultMap，如果还有异常就删除</span></span><br><span class="line">        <span class="keyword">this</span>.parsePendingResultMaps();</span><br><span class="line">		 <span class="comment">//重新处理ChacheRef有处理异常的ChacheRef，如果还有异常就删除</span></span><br><span class="line">        <span class="keyword">this</span>.parsePendingChacheRefs();</span><br><span class="line">		 <span class="comment">//重新处理Statement有处理异常的Statement，如果还有异常就删除</span></span><br><span class="line">        <span class="keyword">this</span>.parsePendingStatements();</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//接下来查看处理mapper.xml文件绑定的java接口</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">bindMapperForNamespace</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String namespace = <span class="keyword">this</span>.builderAssistant.getCurrentNamespace();</span><br><span class="line">        <span class="keyword">if</span> (namespace != <span class="keyword">null</span>) &#123;</span><br><span class="line">            Class boundType = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">			   <span class="comment">//获取mapper.xml绑定的java接口的class文件</span></span><br><span class="line">                boundType = Resources.classForName(namespace);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (ClassNotFoundException var4) &#123;</span><br><span class="line">                ;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (boundType != <span class="keyword">null</span> &amp;&amp; !<span class="keyword">this</span>.configuration.hasMapper(boundType)) &#123;</span><br><span class="line">			  <span class="comment">//添加到configuration的loadedResources属性</span></span><br><span class="line">                <span class="keyword">this</span>.configuration.addLoadedResource(<span class="string">&quot;namespace:&quot;</span> + namespace);</span><br><span class="line">				<span class="comment">//添加到configuration的mapperRegistry属性中</span></span><br><span class="line">                <span class="keyword">this</span>.configuration.addMapper(boundType);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//接下里查看添加mapper.xml绑定的java接口到configuration的mapperRegistry属性中</span></span><br><span class="line">	<span class="comment">//的过程</span></span><br><span class="line">	<span class="keyword">public</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">addMapper</span><span class="params">(Class&lt;T&gt; type)</span> </span>&#123;</span><br><span class="line">	  <span class="comment">//判断类型是否为接口</span></span><br><span class="line">        <span class="keyword">if</span> (type.isInterface()) &#123;</span><br><span class="line">		<span class="comment">//判断该类已经注册过了</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.hasMapper(type)) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> BindingException(<span class="string">&quot;Type &quot;</span> + type + <span class="string">&quot; is already known to the MapperRegistry.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">boolean</span> loadCompleted = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">			  <span class="comment">//添加一个接口的包装MapperProxyFactory到configuration的mapperRegistry属性</span></span><br><span class="line">			  <span class="comment">//的knownMappers属性中</span></span><br><span class="line">                <span class="keyword">this</span>.knownMappers.put(type, <span class="keyword">new</span> MapperProxyFactory(type));</span><br><span class="line">				<span class="comment">//包装一个MapperAnnotationBuilder</span></span><br><span class="line">                MapperAnnotationBuilder parser = <span class="keyword">new</span> MapperAnnotationBuilder(<span class="keyword">this</span>.config, type);</span><br><span class="line">				<span class="comment">//判断java接口的mapper.xml文件是否解析，如果没有解析，解析mapper.xml</span></span><br><span class="line">                parser.parse();</span><br><span class="line">                loadCompleted = <span class="keyword">true</span>;</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (!loadCompleted) &#123;</span><br><span class="line">                    <span class="keyword">this</span>.knownMappers.remove(type);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="AC 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="AC 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/mybatis/" rel="tag"># mybatis</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/11/20/springMVC%E5%88%9D%E5%A7%8B%E5%8C%96%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" rel="prev" title="springMVC初始化流程源码解析">
+                  <i class="fa fa-chevron-left"></i> springMVC初始化流程源码解析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/11/25/mybatisSqlSession%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" rel="next" title="mybatisSqlSession执行过程源码解析">
+                  mybatisSqlSession执行过程源码解析 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+  
+  
+  
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">AC</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
