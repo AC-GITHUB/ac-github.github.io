@@ -337,7 +337,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Field field = System.class.getDeclaredField(&quot;props&quot;);</span><br><span class="line">field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">Properties props = (Properties) field.get(<span class="keyword">null</span>);</span><br><span class="line">props.put(<span class="string">&quot;sun.misc.ProxyGenerator.saveGeneratedFiles&quot;</span>, <span class="string">&quot;true&quot;</span>);</span><br></pre></td></tr></table></figure>
+        <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Field field = System.class.getDeclaredField(<span class="string">&quot;props&quot;</span>);</span><br><span class="line">field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">Properties props = (Properties) field.get(<span class="keyword">null</span>);</span><br><span class="line">props.put(<span class="string">&quot;sun.misc.ProxyGenerator.saveGeneratedFiles&quot;</span>, <span class="string">&quot;true&quot;</span>);</span><br></pre></td></tr></table></figure>
     </div>
 
     
