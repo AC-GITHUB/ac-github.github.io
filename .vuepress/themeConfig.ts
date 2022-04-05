@@ -12,7 +12,7 @@ export default defineThemeConfig({
 
   iconPrefix: "iconfont icon-",
 
-  logo: "/avatar.jpeg",
+  logo: "/logo.png",
 
   repo: "https://github.com/AC-GITHUB",
 
@@ -34,7 +34,7 @@ export default defineThemeConfig({
 
   blog: {
     name:"AC",
-    avatar:"/avatar.jpeg",
+    avatar:"/logo.png",
     description: "一个开发者",
     intro: "https://github.com/AC-GITHUB",
     medias: {
