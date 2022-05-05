@@ -9,5 +9,4 @@ lastUpdated: true
 ---
 [git教程][1]
 
-  [1]: /static/articleImage/book.pdf
-  
+[1]: /static/articleImage/2018/book.pdf

@@ -8,4 +8,4 @@ description: redis知识点结构图
 ![enter description here][1]
 
 
-  [1]: /static/articleImage/Redis知识结构图.png
+[1]: /static/articleImage/2018/Redis知识结构图.png

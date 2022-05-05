@@ -8,4 +8,4 @@ description: JVM知识点
 ![enter description here][1]
 
 
-  [1]: /static/articleImage/JVM知识点.jpg
+[1]: /static/articleImage/2018/JVM知识点.jpg

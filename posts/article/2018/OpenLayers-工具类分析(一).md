@@ -144,4 +144,4 @@ description: OpenLayers-工具类分析(一)
  - ol.transform.determinant = function(mat)，转换因子
 
 
-  [1]: /static/articleImage/openlayers-object%E9%9B%86%E6%88%90%E4%BD%93%E7%B3%BB.png
+[1]: /static/articleImage/2018/openlayers-object%E9%9B%86%E6%88%90%E4%BD%93%E7%B3%BB.png

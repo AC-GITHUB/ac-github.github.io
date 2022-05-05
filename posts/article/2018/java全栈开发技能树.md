@@ -10,4 +10,4 @@ description: java全栈开发技能树
 ![enter description here][1]
 
 
-[1]: /static/articleImage/全栈技能树.png
+[1]: /static/articleImage/2018/全栈技能树.png

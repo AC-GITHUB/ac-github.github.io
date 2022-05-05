@@ -21,4 +21,4 @@ description: OpenLayers-map事件注册分发过程源码分析(三)
  - ol.MapBrowserEventHandler.prototype.isMoving_ = function(pointerEvent) ,判断鼠标是否被移动
  - ol.MapBrowserEventHandler.prototype.disposeInternal = function() ,卸载所有的事件，释放对象
 
-  [1]: /static/articleImage/openlayers%E5%9C%B0%E5%9B%BE%E4%BA%8B%E4%BB%B6%E7%BB%A7%E6%89%BF%E4%BD%93%E7%B3%BB.png
+[1]: /static/articleImage/2018/openlayers%E5%9C%B0%E5%9B%BE%E4%BA%8B%E4%BB%B6%E7%BB%A7%E6%89%BF%E4%BD%93%E7%B3%BB.png

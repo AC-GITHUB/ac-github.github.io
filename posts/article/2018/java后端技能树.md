@@ -7,4 +7,4 @@ tag:
 description: java后端开发技能树
 ---
 # java后端技能树
-![](/static/articleImage/java-skill-tree.png)
+![](/static/articleImage/2018/java-skill-tree.png)
