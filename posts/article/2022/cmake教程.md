@@ -24,11 +24,11 @@ CMake 广泛用于 C 和 C++ 语言，但它也可以用于构建其他语言的
 2. 每个项目使用一个CMakeLists.txt（每个目录一个），使用的是cmake语法。
 3. cmake跟已有体系配合不是特别的理想，比如pkgconfig。
 
-## 快速开始
+## 一个简单的例子
 
 1. 使用cmake需要编写编排文件，cmake的编排文件一般是CMakeLists.txt，最简单的编排文件如下：
 
-   ~~~cmake
+   ~~~make
    # 设置必须的cmake最小版本
    cmake_minimum_required(VERSION 3.10)
    

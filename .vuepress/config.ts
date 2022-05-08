@@ -1,4 +1,6 @@
 import { defineUserConfig } from "vuepress";
+import { shikiPlugin } from '@vuepress/plugin-shiki'
+
 import theme from "./theme";
 
 export default defineUserConfig({
@@ -23,6 +25,10 @@ export default defineUserConfig({
       description: "vuepress-theme-hope 的演示",
     },
   },
-
+  plugins: [
+    shikiPlugin({
+      theme:'material-palenight'
+    }),
+  ],
   theme,
 });
