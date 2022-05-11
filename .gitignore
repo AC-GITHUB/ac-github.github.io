@@ -6,5 +6,4 @@ dist/
 
 .vuepress/.cache/
 .vuepress/.temp/
-yarn.lock
 package-lock.json
