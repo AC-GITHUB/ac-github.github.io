@@ -1,3 +1,11 @@
+---
+title: 一致性hash算法
+date:  2022-08-24 23:35:07
+category: 分布式
+description: hash算法
+
+---
+
 ## 1.hash算法
 
 那么什么是hash算法呢，定义如下：
