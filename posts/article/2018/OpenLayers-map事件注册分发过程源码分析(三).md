@@ -2,6 +2,7 @@
 title: OpenLayers-map事件注册分发过程源码分析(三)  
 date:  2018-03-15 23:16:11
 category: openlayers
+tag: openlayers
 description: OpenLayers-map事件注册分发过程源码分析(三)
 ---
 ![地图事件继承体系][1]

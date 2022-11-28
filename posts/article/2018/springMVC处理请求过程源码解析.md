@@ -2,8 +2,8 @@
 title: springMVC处理请求过程源码解析
 tag: 
    - spring
-category: 'spring'
-description: '本文从源代码角度解析springMVC处理http请求的过程,以及返回的流程'
+category: spring
+description: 本文从源代码角度解析springMVC处理http请求的过程,以及返回的流程
 date: 2018-11-26 22:24:21
 ---
 在发送http请求时所有的方法都会首先请求HttpServlet的service方法，在DispatcherServlet这个方法的实现是父类FrameworkServlet的service方法，所以http请求的入口在这里，

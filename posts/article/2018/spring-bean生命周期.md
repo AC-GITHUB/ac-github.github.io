@@ -1,10 +1,10 @@
 ---
-title: "spring bean生命周期"
+title: spring bean生命周期
 comment: true
 tag: 
   - spring
-category: 'spring'
-description: '本文描述了spring bean初始化过程中需要执行的一些列操作的流程'
+category: spring
+description: 本文描述了spring bean初始化过程中需要执行的一些列操作的流程
 date: 2018-11-18 16:16:38
 ---
 ## spring bean生命周期

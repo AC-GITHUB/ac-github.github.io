@@ -2,6 +2,7 @@
 title: cmake教程
 date:  2022-05-06 22:18:41
 category: c++
+tag: c++
 description: cmake教程
 ---
 

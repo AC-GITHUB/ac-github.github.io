@@ -2,6 +2,7 @@
 title: mybatis执行与解析流程  
 date:  2018-03-14 15:26:29
 category: mybatis
+tag: mybatis
 description: mybatis执行与解析流程
 ---
 # mybatis解析流程

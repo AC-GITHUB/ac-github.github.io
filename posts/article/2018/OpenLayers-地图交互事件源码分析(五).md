@@ -2,6 +2,7 @@
 title: OpenLayers-地图交互事件源码分析(五)  
 date:  2018-03-17 14:17:18
 category: openlayers
+tag: openlayers
 description: OpenLayers-地图交互事件源码分析(五)
 ---
 <embed src="/static/articleImage/openlayers%E5%9C%B0%E5%9B%BE%E4%BA%A4%E4%BA%92%E4%BA%8B%E4%BB%B6%E7%BB%93%E6%9E%84.svg" type="image/svg+xml" style="width: 100%;height: 100%;"/>
@@ -33,7 +34,7 @@ description: OpenLayers-地图交互事件源码分析(五)
   }
 };
 ````
- 
+
  - ol.interaction.Interaction.rotate = function(view, rotation, opt_anchor, opt_duration),地图旋转，rotation旋转的角度
  - ol.interaction.Interaction.rotateWithoutConstraints = function(view, rotation, opt_anchor, opt_duration),地图旋转，rotation旋转的角度
  - ol.interaction.Interaction.zoom = function(view, resolution, opt_anchor, opt_duration, opt_direction),地图缩放,resolution需要缩放到分辨率
@@ -62,7 +63,7 @@ description: OpenLayers-地图交互事件源码分析(五)
   }
   return !stopEvent;
 };
-```
+ ```
 # draganddrop
  - ol.interaction.DragAndDrop.handleDrop_ = function(event)，拖拽加载文件
 ```javascript
@@ -81,7 +82,7 @@ description: OpenLayers-地图交互事件源码分析(五)
   }
 };
 ```
- 
+
  - ol.interaction.DragAndDrop.handleStop_ = function(event)，阻止事件冒泡
  - ol.interaction.DragAndDrop.prototype.handleResult_ = function(file, event)，添加文件到地图
  - ol.interaction.DragAndDrop.prototype.registerListeners_ = function(),注册拖拽事件
@@ -163,7 +164,7 @@ ol.interaction.KeyboardZoom.handleEvent = function(mapBrowserEvent) {
 };
 ```
 #  mousewheelzoom
- 
+
  - ol.interaction.MouseWheelZoom.handleEvent = function(mapBrowserEvent)
 ```javascript
 ol.interaction.MouseWheelZoom.handleEvent = function(mapBrowserEvent) {

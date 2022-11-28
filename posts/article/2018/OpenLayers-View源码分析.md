@@ -2,6 +2,7 @@
 title: OpenLayers-View源码分析  
 date:  2018-03-14 21:14:33
 category: openlayers
+tag: openlayers
 description: OpenLayers-View源码分析
 ---
 # OpenLayers-View源码分析

@@ -2,6 +2,7 @@
 title: gdb调试教程
 date:  2022-05-04 19:56:38
 category: c++
+tag: c++
 description: GDB调试教程
 ---
 本文主要介绍gdb相关的知识，[gdb官网](https://sourceware.org/gdb/)

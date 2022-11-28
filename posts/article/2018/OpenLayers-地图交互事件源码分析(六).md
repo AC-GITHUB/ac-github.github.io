@@ -2,6 +2,7 @@
 title: OpenLayers-地图交互事件源码分析(六)  
 date:  2018-03-17 16:23:18
 category: openlayers
+tag: openlayers
 description: OpenLayers-地图交互事件源码分析(六)
 ---
 # pointer

@@ -1,7 +1,8 @@
 ---
 title: redis知识点结构图
 date:  2018-03-13 10:18:44
-category: java
+category: redis
+tag: redis
 description: redis知识点结构图
 ---
 # redis知识点结构图

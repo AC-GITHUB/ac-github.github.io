@@ -1,7 +1,10 @@
 ---
 title: ESRI投影坐标系统 
 date:  2020-03-16 22:27:00
-category: openlayers
+category: gis
+tag:
+ - gis
+ - esri
 description: ESRI投影坐标系统
 ---
 
@@ -5496,4 +5499,4 @@ Note: Values may be rounded for display. Area of use values are in decimal degre
 | False_Northing                     | 0                  | 1                 |                    |
 | Central_Meridian                   | 0                  | 2                 |                    |
 | Standard_Parallel_1                | 60                 | 3                 |                    |
-            
+

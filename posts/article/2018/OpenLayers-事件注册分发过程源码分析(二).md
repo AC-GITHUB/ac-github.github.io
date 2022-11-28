@@ -2,6 +2,7 @@
 title: OpenLayers-事件注册分发过程源码分析(二)
 date:  2018-03-15 21:50:55
 category: openlayers
+tag: openlayers
 description: OpenLayers-事件注册分发过程源码分析(二)
 ---
 # event

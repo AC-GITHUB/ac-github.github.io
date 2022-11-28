@@ -3,8 +3,8 @@ title: spring context启动流程
 comment: true
 tag: 
   - spring
-category: 'spring'
-description: '本文主要描述springcontext 的启动流程以及启动时执行的方法'
+category: spring
+description: 本文主要描述springcontext 的启动流程以及启动时执行的方法
 date: 2018-11-18 20:24:23
 ---
 ## springcontext 的启动流程源码

@@ -2,6 +2,7 @@
 title: OpenLayers-pointer事件注册分发过程源码分析(四)  
 date:  2018-03-16 09:14:02
 category: openlayers
+tag: openlayers
 description: OpenLayers-pointer事件注册分发过程源码分析(四)
 ---
 # pointerevent

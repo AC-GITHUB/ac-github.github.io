@@ -2,6 +2,9 @@
 title: 一致性hash算法
 date:  2022-08-24 23:35:07
 category: 分布式
+tag:
+ - 分布式
+ - 算法
 description: hash算法
 
 ---

@@ -2,6 +2,7 @@
 title: OpenLayers-工具类分析(一)  
 date:  2018-03-14 21:14:33
 category: openlayers
+tag: openlayers
 description: OpenLayers-工具类分析(一)
 ---
 # disposable
