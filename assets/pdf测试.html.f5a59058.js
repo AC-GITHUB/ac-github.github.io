@@ -1,0 +1,1 @@
+import{_ as e}from"./plugin-vue_export-helper.21dcd24c.js";import{o as t,c as o,b as _}from"./app.aab1f085.js";const c={},r=_("a",{href:"/static/articleImage/2018/book.pdf"},"git\u6559\u7A0B",-1),a=[r];function s(f,n){return t(),o("p",null,a)}var d=e(c,[["render",s],["__file","pdf\u6D4B\u8BD5.html.vue"]]);export{d as default};
