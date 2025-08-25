@@ -10,8 +10,6 @@ export default hopeTheme({
     url: "https://github.com/AC-GITHUB",
   },
 
-  iconPrefix: "iconfont icon-",
-
   logo: "/logo.png",
 
   repo: "https://github.com/AC-GITHUB",
@@ -63,5 +61,12 @@ export default hopeTheme({
         plugins: ["highlight", "math", "search", "notes", "zoom"],
       },
     },
+    icon: {
+      prefix: "iconfont icon-",
+    },
+  },
+  markdown: {
+    plantuml: true,
+    mermaid: true,
   },
 });

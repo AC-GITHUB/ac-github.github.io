@@ -5,7 +5,7 @@ category: openlayers
 tag: openlayers
 description: OpenLayers-地图交互事件源码分析(五)
 ---
-<embed src="/static/articleImage/openlayers%E5%9C%B0%E5%9B%BE%E4%BA%A4%E4%BA%92%E4%BA%8B%E4%BB%B6%E7%BB%93%E6%9E%84.svg" type="image/svg+xml" style="width: 100%;height: 100%;"/>
+<object data="/static/articleImage/openlayers%E5%9C%B0%E5%9B%BE%E4%BA%A4%E4%BA%92%E4%BA%8B%E4%BB%B6%E7%BB%93%E6%9E%84.svg" type="image/svg+xml" style="width: 100%;height: 100%;"/>
 # interaction
 
  - ol.interaction.Interaction.prototype.getActive = function()，查看工具是否可用

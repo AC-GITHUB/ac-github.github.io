@@ -1,0 +1,549 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class AbstractEventExecutor {
+  + AbstractEventExecutor(): 
+  + newSucceededFuture(V): Future<V>
+  # newTaskFor(Runnable, T): RunnableFuture<T>
+  + newPromise(): Promise<V>
+  + newFailedFuture(Throwable): Future<V>
+  + submit(Runnable): Future<?>
+  + shutdown(): void
+  + submit(Runnable, T): Future<T>
+  + submit(Callable<T>): Future<T>
+  - newRunnableFuture(Promise<V>, Runnable, V): RunnableFuture<V>
+  - newRunnableFuture(Promise<V>, Callable<V>): RunnableFuture<V>
+  + inEventLoop(): boolean
+  + shutdownNow(): List<Runnable>
+  # newTaskFor(Callable<T>): RunnableFuture<T>
+  + next(): EventExecutor
+  ~ safeExecute(Runnable): void
+  + iterator(): Iterator<EventExecutor>
+  + shutdownGracefully(): Future<?>
+}
+class AbstractEventExecutorGroup {
+  + AbstractEventExecutorGroup(): 
+  + schedule(Callable<V>, long, TimeUnit): ScheduledFuture<V>
+  + invokeAny(Collection<Callable<T>>): T
+  + submit(Runnable, T): Future<T>
+  + submit(Callable<T>): Future<T>
+  + schedule(Runnable, long, TimeUnit): ScheduledFuture<?>
+  + shutdownGracefully(): Future<?>
+  + execute(Runnable): void
+  + invokeAny(Collection<Callable<T>>, long, TimeUnit): T
+  + submit(Runnable): Future<?>
+  + shutdown(): void
+  + shutdownNow(): List<Runnable>
+  + invokeAll(Collection<Callable<T>>): List<Future<T>>
+  + scheduleWithFixedDelay(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+  + invokeAll(Collection<Callable<T>>, long, TimeUnit): List<Future<T>>
+  + scheduleAtFixedRate(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+}
+class AbstractScheduledEventExecutor {
+  # AbstractScheduledEventExecutor(): 
+  # nextScheduledTaskNano(): long
+  ~ peekScheduledTask(): RunnableScheduledFuture<?>?
+  # newRunnableScheduledFuture(AbstractScheduledEventExecutor, Promise<V>, Callable<V>, long, long): RunnableScheduledFuture<V>
+  + scheduleWithFixedDelay(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+  - isNullOrEmpty(Queue<RunnableScheduledFutureNode<?>>): boolean
+  + schedule(Runnable, long, TimeUnit): ScheduledFuture<?>
+  - add0(RunnableScheduledFuture<V>): void
+  + schedule(Callable<V>, long, TimeUnit): ScheduledFuture<V>
+  + nanoTime(): long
+  ~ scheduledTaskQueue(): PriorityQueue<RunnableScheduledFutureNode<?>>
+  # cancelScheduledTasks(): void
+  # schedule(RunnableScheduledFuture<V>): ScheduledFuture<V>
+  # hasScheduledTasks(): boolean
+  # newScheduledTaskFor(Callable<V>, long, long): RunnableScheduledFuture<V>
+  ~ removeScheduled(RunnableScheduledFutureNode<?>): void
+  ~ deadlineNanos(long): long
+  + scheduleAtFixedRate(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+  # pollScheduledTask(): RunnableScheduledFuture<?>
+  # pollScheduledTask(long): RunnableScheduledFuture<?>?
+}
+class DefaultEventExecutorGroup {
+  + DefaultEventExecutorGroup(int): 
+  + DefaultEventExecutorGroup(int, ThreadFactory, int, RejectedExecutionHandler): 
+  + DefaultEventExecutorGroup(int, ThreadFactory): 
+}
+class DefaultRunnableScheduledFutureNode<V> {
+  ~ DefaultRunnableScheduledFutureNode(RunnableScheduledFuture<V>): 
+  + delayNanos(): long
+  + addListener(C, FutureContextListener<C, V>): RunnableScheduledFuture<V>
+  + cause(): Throwable
+  + delayNanos(long): long
+  + awaitUninterruptibly(long, TimeUnit): boolean
+  + syncUninterruptibly(): RunnableFuture<V>
+  + get(long, TimeUnit): V
+  + await(long, TimeUnit): boolean
+  + awaitUninterruptibly(): RunnableFuture<V>
+  + executor(): EventExecutor
+  + compareTo(Delayed): int
+  + priorityQueueIndex(DefaultPriorityQueue<?>): int
+  + await(long): boolean
+  + deadlineNanos(): long
+  + get(): V
+  + awaitUninterruptibly(long): boolean
+  + addListener(FutureListener<V>): RunnableScheduledFuture<V>
+  + sync(): RunnableFuture<V>
+  + run(): void
+  + cancel(boolean): boolean
+  + getDelay(TimeUnit): long
+  + await(): RunnableFuture<V>
+  + priorityQueueIndex(DefaultPriorityQueue<?>, int): void
+   done: boolean
+   now: V
+   periodic: boolean
+   success: boolean
+   cancelled: boolean
+   cancellable: boolean
+   failed: boolean
+}
+class DefaultThreadProperties {
+  ~ DefaultThreadProperties(Thread): 
+  + stackTrace(): StackTraceElement[]
+  + priority(): int
+  + id(): long
+  + state(): State
+  + name(): String
+   alive: boolean
+   daemon: boolean
+   interrupted: boolean
+}
+class DelegateHarnessExecutor {
+  + DelegateHarnessExecutor(int, String): 
+  + terminationFuture(): Future<?>
+  + inEventLoop(Thread): boolean
+  + execute(Runnable): void
+  + awaitTermination(long, TimeUnit): boolean
+  + schedule(Runnable, long, TimeUnit): ScheduledFuture<?>
+  + schedule(Callable<V>, long, TimeUnit): ScheduledFuture<V>
+  + executor(EventLoop): void
+  + scheduleWithFixedDelay(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+  + newPromise(): Promise<V>
+  + shutdown(): void
+  + shutdownGracefully(long, long, TimeUnit): Future<?>
+  + scheduleAtFixedRate(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+   shuttingDown: boolean
+   terminated: boolean
+   shutdown: boolean
+}
+class EmbeddedEventLoop {
+  + EmbeddedEventLoop(): 
+  ~ cancelScheduled(): void
+  + next(): EventLoop
+  + shutdown(): void
+  ~ runScheduledTasks(): long
+  + unsafe(): Unsafe
+  ~ runTasks(): void
+  + terminationFuture(): Future<?>
+  - cast(Channel): EmbeddedChannel
+  + awaitTermination(long, TimeUnit): boolean
+  ~ nextScheduledTask(): long
+  + shutdownGracefully(long, long, TimeUnit): Future<?>
+  + inEventLoop(Thread): boolean
+  + execute(Runnable): void
+   shuttingDown: boolean
+   terminated: boolean
+   shutdown: boolean
+}
+class EpollEventLoopGroup {
+  + EpollEventLoopGroup(int, ThreadFactory, int, SelectStrategyFactory): 
+  + EpollEventLoopGroup(int, ThreadFactory): 
+  + EpollEventLoopGroup(int, SelectStrategyFactory): 
+  + EpollEventLoopGroup(): 
+  + EpollEventLoopGroup(int, Executor): 
+  + EpollEventLoopGroup(int, Executor, SelectStrategyFactory): 
+  + EpollEventLoopGroup(int): 
+  + EpollEventLoopGroup(int, ThreadFactory, SelectStrategyFactory): 
+  + EpollEventLoopGroup(int, ThreadFactory, int): 
+}
+interface EventExecutor << interface >> {
+  + newPromise(): Promise<V>
+  + newSucceededFuture(V): Future<V>
+  + newFailedFuture(Throwable): Future<V>
+  + next(): EventExecutor
+  + inEventLoop(Thread): boolean
+  + inEventLoop(): boolean
+}
+interface EventExecutorGroup << interface >> {
+  + submit(Runnable): Future<?>
+  + schedule(Runnable, long, TimeUnit): ScheduledFuture<?>
+  + shutdownGracefully(long, long, TimeUnit): Future<?>
+  + next(): EventExecutor
+  + submit(Callable<T>): Future<T>
+  + submit(Runnable, T): Future<T>
+  + scheduleAtFixedRate(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+  + shutdownGracefully(): Future<?>
+  + shutdown(): void
+  + scheduleWithFixedDelay(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+  + schedule(Callable<V>, long, TimeUnit): ScheduledFuture<V>
+  + terminationFuture(): Future<?>
+  + shutdownNow(): List<Runnable>
+  + iterator(): Iterator<EventExecutor>
+   shuttingDown: boolean
+}
+interface EventLoop << interface >> {
+  + unsafe(): Unsafe
+}
+interface EventLoopGroup << interface >> {
+  + next(): EventLoop
+}
+interface Executor << interface >> {
+  + execute(Runnable): void
+}
+interface ExecutorService << interface >> {
+  + shutdown(): void
+  + invokeAll(Collection<Callable<T>>): List<Future<T>>
+  + submit(Runnable): Future<?>
+  + invokeAny(Collection<Callable<T>>): T
+  + invokeAny(Collection<Callable<T>>, long, TimeUnit): T
+  + shutdownNow(): List<Runnable>
+  + submit(Callable<T>): Future<T>
+  + submit(Runnable, T): Future<T>
+  + invokeAll(Collection<Callable<T>>, long, TimeUnit): List<Future<T>>
+  + awaitTermination(long, TimeUnit): boolean
+   terminated: boolean
+   shutdown: boolean
+}
+class GlobalEventExecutor {
+  - GlobalEventExecutor(): 
+  - fetchFromScheduledTaskQueue(): void
+  + shutdownGracefully(long, long, TimeUnit): Future<?>
+  - startThread(): void
+  + awaitInactivity(long, TimeUnit): boolean
+  + execute(Runnable): void
+  + inEventLoop(Thread): boolean
+  + shutdown(): void
+  + terminationFuture(): Future<?>
+  - addTask(Runnable): void
+  + pendingTasks(): int
+  + awaitTermination(long, TimeUnit): boolean
+  - takeTask(): Runnable?
+   shuttingDown: boolean
+   terminated: boolean
+   shutdown: boolean
+}
+class ImmediateEventExecutor {
+  - ImmediateEventExecutor(): 
+  + schedule(Callable<V>, long, TimeUnit): ScheduledFuture<V>
+  + awaitTermination(long, TimeUnit): boolean
+  + execute(Runnable): void
+  + schedule(Runnable, long, TimeUnit): ScheduledFuture<?>
+  + inEventLoop(Thread): boolean
+  + scheduleWithFixedDelay(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+  + scheduleAtFixedRate(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+  + terminationFuture(): Future<?>
+  + shutdown(): void
+  + newPromise(): Promise<V>
+  + shutdownGracefully(long, long, TimeUnit): Future<?>
+   shuttingDown: boolean
+   terminated: boolean
+   shutdown: boolean
+}
+class ImmediatePromise<V> {
+  ~ ImmediatePromise(EventExecutor): 
+  # checkDeadLock(): void
+}
+interface Iterable<T> << interface >> {
+  + iterator(): Iterator<T>
+  + spliterator(): Spliterator<T>
+  + forEach(Consumer<T>): void
+}
+class KQueueEventLoopGroup {
+  + KQueueEventLoopGroup(int, Executor, SelectStrategyFactory): 
+  + KQueueEventLoopGroup(int): 
+  + KQueueEventLoopGroup(int, SelectStrategyFactory): 
+  + KQueueEventLoopGroup(int, ThreadFactory, SelectStrategyFactory): 
+  + KQueueEventLoopGroup(): 
+  + KQueueEventLoopGroup(int, ThreadFactory, int): 
+  + KQueueEventLoopGroup(int, ThreadFactory, int, SelectStrategyFactory): 
+  + KQueueEventLoopGroup(int, ThreadFactory): 
+  + KQueueEventLoopGroup(int, Executor, SelectStrategyFactory, int, RejectedExecutionHandler): 
+  + KQueueEventLoopGroup(int, Executor): 
+}
+class LocalEventLoopGroup {
+  + LocalEventLoopGroup(int, ThreadFactory, int, RejectedExecutionHandler): 
+  + LocalEventLoopGroup(int, ThreadFactory): 
+  + LocalEventLoopGroup(int, Executor): 
+  + LocalEventLoopGroup(): 
+  + LocalEventLoopGroup(int): 
+  + LocalEventLoopGroup(int, Executor, int, RejectedExecutionHandler): 
+}
+class MultithreadEventExecutorGroup {
+  + MultithreadEventExecutorGroup(int, Executor): 
+  # MultithreadEventExecutorGroup(int, Executor, int, RejectedExecutionHandler, Object[]): 
+  + MultithreadEventExecutorGroup(int, Executor, int, RejectedExecutionHandler): 
+  # MultithreadEventExecutorGroup(int, ThreadFactory, int, RejectedExecutionHandler, Object[]): 
+  + MultithreadEventExecutorGroup(int, ThreadFactory): 
+  + MultithreadEventExecutorGroup(int, ThreadFactory, int, RejectedExecutionHandler): 
+  + shutdown(): void
+  # executors(): List<EventExecutor>
+  + terminationFuture(): Future<?>
+  + awaitTermination(long, TimeUnit): boolean
+  - isPowerOfTwo(int): boolean
+  + iterator(): Iterator<EventExecutor>
+  # newChild(Executor, int, RejectedExecutionHandler, Object[]): EventExecutor
+  + shutdownGracefully(long, long, TimeUnit): Future<?>
+  + executorCount(): int
+  + next(): EventExecutor
+   shuttingDown: boolean
+   terminated: boolean
+   shutdown: boolean
+}
+class MultithreadEventLoopGroup {
+  + MultithreadEventLoopGroup(int, ThreadFactory, IoHandlerFactory, int, RejectedExecutionHandler, int): 
+  # MultithreadEventLoopGroup(int, ThreadFactory, IoHandlerFactory, int, RejectedExecutionHandler, int, Object[]): 
+  + MultithreadEventLoopGroup(ThreadFactory, IoHandlerFactory): 
+  + MultithreadEventLoopGroup(Executor, IoHandlerFactory): 
+  # MultithreadEventLoopGroup(int, Executor, IoHandlerFactory, int, RejectedExecutionHandler, int, Object[]): 
+  + MultithreadEventLoopGroup(int, Executor, IoHandlerFactory, int, RejectedExecutionHandler): 
+  + MultithreadEventLoopGroup(int, IoHandlerFactory): 
+  + MultithreadEventLoopGroup(int, ThreadFactory, IoHandlerFactory, int, RejectedExecutionHandler): 
+  + MultithreadEventLoopGroup(int, Executor, IoHandlerFactory, int, RejectedExecutionHandler, int): 
+  + MultithreadEventLoopGroup(int, Executor, IoHandlerFactory): 
+  + MultithreadEventLoopGroup(int, ThreadFactory, IoHandlerFactory): 
+  + MultithreadEventLoopGroup(IoHandlerFactory): 
+  - merge(IoHandlerFactory, int, Object[]): Object[]
+  - newDefaultThreadFactory(): ThreadFactory
+  + next(): EventLoop
+  # pickThreadCount(int): int
+  # newChild(Executor, int, RejectedExecutionHandler, IoHandler, int, Object[]): EventLoop
+  # newChild(Executor, int, RejectedExecutionHandler, Object[]): EventLoop
+}
+class NioEventLoopGroup {
+  + NioEventLoopGroup(int, Executor): 
+  + NioEventLoopGroup(): 
+  + NioEventLoopGroup(int, ThreadFactory): 
+  + NioEventLoopGroup(int, Executor, SelectorProvider): 
+  + NioEventLoopGroup(int, Executor, SelectorProvider, SelectStrategyFactory): 
+  + NioEventLoopGroup(int, Executor, SelectorProvider, SelectStrategyFactory, int, RejectedExecutionHandler): 
+  + NioEventLoopGroup(int, ThreadFactory, SelectorProvider, SelectStrategyFactory): 
+  + NioEventLoopGroup(int): 
+}
+class NonNotifyRunnable {
+  ~ NonNotifyRunnable(Runnable): 
+  + run(): void
+}
+class NonStickyEventExecutorGroup {
+  + NonStickyEventExecutorGroup(EventExecutorGroup): 
+  + NonStickyEventExecutorGroup(EventExecutorGroup, int): 
+  + schedule(Callable<V>, long, TimeUnit): ScheduledFuture<V>
+  + invokeAll(Collection<Callable<T>>): List<Future<T>>
+  + invokeAll(Collection<Callable<T>>, long, TimeUnit): List<Future<T>>
+  + next(): EventExecutor
+  + submit(Callable<T>): Future<T>
+  + shutdown(): void
+  + invokeAny(Collection<Callable<T>>): T
+  + submit(Runnable): Future<?>
+  + awaitTermination(long, TimeUnit): boolean
+  + execute(Runnable): void
+  + submit(Runnable, T): Future<T>
+  - verify(EventExecutorGroup): EventExecutorGroup
+  + schedule(Runnable, long, TimeUnit): ScheduledFuture<?>
+  + invokeAny(Collection<Callable<T>>, long, TimeUnit): T
+  + scheduleAtFixedRate(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+  - newExecutor(EventExecutor): NonStickyOrderedEventExecutor
+  + shutdownNow(): List<Runnable>
+  + shutdownGracefully(long, long, TimeUnit): Future<?>
+  + terminationFuture(): Future<?>
+  + scheduleWithFixedDelay(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+  + shutdownGracefully(): Future<?>
+  + iterator(): Iterator<EventExecutor>
+   shuttingDown: boolean
+   terminated: boolean
+   shutdown: boolean
+}
+class NonStickyOrderedEventExecutor {
+  ~ NonStickyOrderedEventExecutor(EventExecutor, int): 
+  + scheduleWithFixedDelay(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+  + awaitTermination(long, TimeUnit): boolean
+  + run(): void
+  + shutdownGracefully(long, long, TimeUnit): Future<?>
+  + schedule(Runnable, long, TimeUnit): ScheduledFuture<?>
+  + inEventLoop(Thread): boolean
+  + scheduleAtFixedRate(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+  + shutdown(): void
+  + schedule(Callable<V>, long, TimeUnit): ScheduledFuture<V>
+  + execute(Runnable): void
+  + terminationFuture(): Future<?>
+   shuttingDown: boolean
+   terminated: boolean
+   shutdown: boolean
+}
+interface NonWakeupRunnable << interface >>
+interface OrderedEventExecutor << interface >>
+interface RunnableScheduledFutureNode<V> << interface >>
+class RunnableScheduledFutureTask<V> {
+  ~ RunnableScheduledFutureTask(EventExecutor, Runnable, RunnableScheduledFuture<V>): 
+  ~ RunnableScheduledFutureTask(EventExecutor, Callable<V>, RunnableScheduledFuture<V>): 
+  + run(): void
+  + getDelay(TimeUnit): long
+  + compareTo(Delayed): int
+   periodic: boolean
+}
+interface ScheduledExecutorService << interface >> {
+  + scheduleAtFixedRate(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+  + scheduleWithFixedDelay(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+  + schedule(Callable<V>, long, TimeUnit): ScheduledFuture<V>
+  + schedule(Runnable, long, TimeUnit): ScheduledFuture<?>
+}
+class SingleThreadEventExecutor {
+  + SingleThreadEventExecutor(Executor): 
+  + SingleThreadEventExecutor(Executor, int, RejectedExecutionHandler): 
+  + SingleThreadEventExecutor(ThreadFactory): 
+  + SingleThreadEventExecutor(ThreadFactory, int, RejectedExecutionHandler): 
+  + SingleThreadEventExecutor(): 
+  + awaitTermination(long, TimeUnit): boolean
+  - ensureThreadStarted(int): boolean
+  ~ confirmShutdown0(): boolean
+  # interruptThread(): void
+  + threadProperties(): ThreadProperties
+  # newTaskQueue(int): Queue<Runnable>
+  + invokeAll(Collection<Callable<T>>): List<Future<T>>
+  - fetchFromScheduledTaskQueue(): boolean
+  - throwIfInEventLoop(String): void
+  - addTask(Runnable): void
+  # removeTask(Runnable): boolean
+  # run(): void
+  # confirmShutdown(): boolean
+  - startThread(): void
+  # hasTasks(): boolean
+  + invokeAll(Collection<Callable<T>>, long, TimeUnit): List<Future<T>>
+  + inEventLoop(Thread): boolean
+  - runShutdownHooks(): boolean
+  + invokeAny(Collection<Callable<T>>): T
+  + shutdown(): void
+  + execute(Runnable): void
+  # wakesUpForTask(Runnable): boolean
+  + addShutdownHook(Runnable): void
+  + invokeAny(Collection<Callable<T>>, long, TimeUnit): T
+  # takeTask(): Runnable?
+  # delayNanos(long): long
+  ~ drainTasks(): int
+  + removeShutdownHook(Runnable): void
+  + shutdownGracefully(long, long, TimeUnit): Future<?>
+  # updateLastExecutionTime(): void
+  # wakeup(boolean): void
+  # reject(): void
+  - doStartThread(): void
+  # cleanup(): void
+  # runAllTasks(int): int
+  - runAllTasks(): boolean
+  # offerTask(Runnable): boolean
+  # deadlineNanos(): long
+  + terminationFuture(): Future<?>
+  + pendingTasks(): int
+  # pollTask(): Runnable
+   shuttingDown: boolean
+   terminated: boolean
+   shutdown: boolean
+}
+class SingleThreadEventLoop {
+  + SingleThreadEventLoop(ThreadFactory, IoHandler, int, RejectedExecutionHandler, int): 
+  + SingleThreadEventLoop(ThreadFactory, IoHandler): 
+  + SingleThreadEventLoop(Executor, IoHandler, int, RejectedExecutionHandler, int): 
+  + SingleThreadEventLoop(Executor, IoHandler): 
+  + SingleThreadEventLoop(ThreadFactory, IoHandler, int, RejectedExecutionHandler): 
+  + SingleThreadEventLoop(Executor, IoHandler, int, RejectedExecutionHandler): 
+  # runIo(): int
+  # wakeup(boolean): void
+  # wakesUpForTask(Runnable): boolean
+  # deregister(Channel): void
+  + next(): EventLoop
+  # run(): void
+  + unsafe(): Unsafe
+  # register(Channel): void
+  # cleanup(): void
+  # newTaskQueue(int): Queue<Runnable>
+}
+class TaskRunner {
+  + TaskRunner(): 
+  + run(): void
+}
+class UnorderedThreadPoolEventExecutor {
+  + UnorderedThreadPoolEventExecutor(int): 
+  + UnorderedThreadPoolEventExecutor(int, ThreadFactory, RejectedExecutionHandler): 
+  + UnorderedThreadPoolEventExecutor(int, ThreadFactory): 
+  + UnorderedThreadPoolEventExecutor(int, RejectedExecutionHandler): 
+  + newPromise(): Promise<V>
+  # decorateTask(Runnable, RunnableScheduledFuture<V>): RunnableScheduledFuture<V>
+  + scheduleAtFixedRate(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+  + newSucceededFuture(V): Future<V>
+  + execute(Runnable): void
+  + schedule(Runnable, long, TimeUnit): ScheduledFuture<?>
+  + shutdownNow(): List<Runnable>
+  + inEventLoop(Thread): boolean
+  + submit(Runnable, T): Future<T>
+  + inEventLoop(): boolean
+  + iterator(): Iterator<EventExecutor>
+  + schedule(Callable<V>, long, TimeUnit): ScheduledFuture<V>
+  + next(): EventExecutor
+  + terminationFuture(): Future<?>
+  + scheduleWithFixedDelay(Runnable, long, long, TimeUnit): ScheduledFuture<?>
+  + shutdownGracefully(): Future<?>
+  + submit(Runnable): Future<?>
+  # decorateTask(Callable<V>, RunnableScheduledFuture<V>): RunnableScheduledFuture<V>
+  + newFailedFuture(Throwable): Future<V>
+  + shutdownGracefully(long, long, TimeUnit): Future<?>
+  + submit(Callable<T>): Future<T>
+  + shutdown(): void
+   shuttingDown: boolean
+}
+interface Unsafe << interface >> {
+  + register(Channel): void
+  + deregister(Channel): void
+}
+
+AbstractEventExecutor               -[#008200,dashed]-^  EventExecutor                      
+AbstractEventExecutor               -[#008200,dashed]-^  ExecutorService                    
+AbstractEventExecutorGroup          -[#008200,dashed]-^  EventExecutorGroup                 
+AbstractScheduledEventExecutor      -[#000082,plain]-^  AbstractEventExecutor              
+DefaultEventExecutorGroup           -[#000082,plain]-^  MultithreadEventExecutorGroup      
+DefaultRunnableScheduledFutureNode  +-[#820000,plain]-  AbstractScheduledEventExecutor     
+DefaultRunnableScheduledFutureNode  -[#008200,dashed]-^  RunnableScheduledFutureNode        
+DefaultThreadProperties             +-[#820000,plain]-  SingleThreadEventExecutor          
+DelegateHarnessExecutor             -[#000082,plain]-^  AbstractEventExecutor              
+EmbeddedEventLoop                   -[#000082,plain]-^  AbstractScheduledEventExecutor     
+EmbeddedEventLoop                   -[#008200,dashed]-^  EventLoop                          
+EpollEventLoopGroup                 -[#000082,plain]-^  MultithreadEventLoopGroup          
+EventExecutor                       -[#008200,plain]-^  EventExecutorGroup                 
+EventExecutorGroup                  -[#008200,plain]-^  Iterable                           
+EventExecutorGroup                  -[#008200,plain]-^  ScheduledExecutorService           
+EventLoop                           -[#008200,plain]-^  EventLoopGroup                     
+EventLoop                           -[#008200,plain]-^  OrderedEventExecutor               
+EventLoopGroup                      -[#008200,plain]-^  EventExecutorGroup                 
+ExecutorService                     -[#008200,plain]-^  Executor                           
+GlobalEventExecutor                 -[#000082,plain]-^  AbstractScheduledEventExecutor     
+GlobalEventExecutor                 -[#008200,dashed]-^  OrderedEventExecutor               
+ImmediateEventExecutor              -[#000082,plain]-^  AbstractEventExecutor              
+ImmediatePromise                    +-[#820000,plain]-  ImmediateEventExecutor             
+KQueueEventLoopGroup                -[#000082,plain]-^  MultithreadEventLoopGroup          
+LocalEventLoopGroup                 -[#000082,plain]-^  MultithreadEventLoopGroup          
+MultithreadEventExecutorGroup       -[#000082,plain]-^  AbstractEventExecutorGroup         
+MultithreadEventLoopGroup           -[#008200,dashed]-^  EventLoopGroup                     
+MultithreadEventLoopGroup           -[#000082,plain]-^  MultithreadEventExecutorGroup      
+NioEventLoopGroup                   -[#000082,plain]-^  MultithreadEventLoopGroup          
+NonNotifyRunnable                   +-[#820000,plain]-  UnorderedThreadPoolEventExecutor   
+NonStickyEventExecutorGroup         -[#008200,dashed]-^  EventExecutorGroup                 
+NonStickyOrderedEventExecutor       -[#000082,plain]-^  AbstractEventExecutor              
+NonStickyOrderedEventExecutor       +-[#820000,plain]-  NonStickyEventExecutorGroup        
+NonStickyOrderedEventExecutor       -[#008200,dashed]-^  OrderedEventExecutor               
+NonWakeupRunnable                   +-[#820000,plain]-  SingleThreadEventLoop              
+OrderedEventExecutor                -[#008200,plain]-^  EventExecutor                      
+RunnableScheduledFutureNode         +-[#820000,plain]-  AbstractScheduledEventExecutor     
+RunnableScheduledFutureTask         +-[#820000,plain]-  UnorderedThreadPoolEventExecutor   
+ScheduledExecutorService            -[#008200,plain]-^  ExecutorService                    
+SingleThreadEventExecutor           -[#000082,plain]-^  AbstractScheduledEventExecutor     
+SingleThreadEventExecutor           -[#008200,dashed]-^  OrderedEventExecutor               
+SingleThreadEventLoop               -[#008200,dashed]-^  EventLoop                          
+SingleThreadEventLoop               -[#000082,plain]-^  SingleThreadEventExecutor          
+TaskRunner                          +-[#820000,plain]-  GlobalEventExecutor                
+UnorderedThreadPoolEventExecutor    -[#008200,dashed]-^  EventExecutor                      
+UnorderedThreadPoolEventExecutor    -[#008200,dashed]-^  ExecutorService                    
+UnorderedThreadPoolEventExecutor    -[#008200,dashed]-^  ScheduledExecutorService           
+Unsafe                              +-[#820000,plain]-  EventLoop                          
+@enduml

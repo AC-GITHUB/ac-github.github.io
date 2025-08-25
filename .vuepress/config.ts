@@ -1,5 +1,5 @@
 import { defineUserConfig } from "vuepress";
-import { shikiPlugin } from '@vuepress/plugin-shiki'
+import { viteBundler } from '@vuepress/bundler-vite'
 
 import theme from "./theme";
 
@@ -25,10 +25,9 @@ export default defineUserConfig({
       description: "vuepress-theme-hope 的演示",
     },
   },
-  plugins: [
-    shikiPlugin({
-      theme:'material-palenight'
-    }),
-  ],
   theme,
+  bundler: viteBundler({
+    viteOptions: {},
+    vuePluginOptions: {},
+  }),
 });

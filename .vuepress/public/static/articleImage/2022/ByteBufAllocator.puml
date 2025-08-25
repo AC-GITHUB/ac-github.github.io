@@ -1,0 +1,167 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class AbstractByteBufAllocator {
+  # AbstractByteBufAllocator(boolean): 
+  # AbstractByteBufAllocator(): 
+  - validate(int, int): void
+  + directBuffer(): ByteBuf
+  + heapBuffer(int): ByteBuf
+  # newDirectBuffer(int, int): ByteBuf
+  + buffer(int): ByteBuf
+  + compositeDirectBuffer(): CompositeByteBuf
+  + heapBuffer(int, int): ByteBuf
+  + compositeDirectBuffer(int): CompositeByteBuf
+  + compositeHeapBuffer(): CompositeByteBuf
+  + ioBuffer(): ByteBuf
+  # toLeakAwareBuffer(CompositeByteBuf): CompositeByteBuf
+  + compositeBuffer(): CompositeByteBuf
+  + ioBuffer(int, int): ByteBuf
+  # newHeapBuffer(int, int): ByteBuf
+  + directBuffer(int, int): ByteBuf
+  + heapBuffer(): ByteBuf
+  + buffer(int, int): ByteBuf
+  + buffer(): ByteBuf
+  + directBuffer(int): ByteBuf
+  + ioBuffer(int): ByteBuf
+  + compositeHeapBuffer(int): CompositeByteBuf
+  # toLeakAwareBuffer(ByteBuf): ByteBuf
+  + compositeBuffer(int): CompositeByteBuf
+  + calculateNewCapacity(int, int): int
+  + toString(): String
+}
+interface ByteBufAllocator << interface >> {
+  + directBuffer(int, int): ByteBuf
+  + compositeBuffer(): CompositeByteBuf
+  + calculateNewCapacity(int, int): int
+  + buffer(int): ByteBuf
+  + heapBuffer(): ByteBuf
+  + heapBuffer(int): ByteBuf
+  + compositeHeapBuffer(int): CompositeByteBuf
+  + ioBuffer(): ByteBuf
+  + compositeBuffer(int): CompositeByteBuf
+  + compositeDirectBuffer(): CompositeByteBuf
+  + buffer(): ByteBuf
+  + compositeHeapBuffer(): CompositeByteBuf
+  + directBuffer(): ByteBuf
+  + ioBuffer(int): ByteBuf
+  + ioBuffer(int, int): ByteBuf
+  + heapBuffer(int, int): ByteBuf
+  + directBuffer(int): ByteBuf
+  + buffer(int, int): ByteBuf
+  + compositeDirectBuffer(int): CompositeByteBuf
+   directBufferPooled: boolean
+}
+class InstrumentedUnpooledDirectByteBuf {
+  ~ InstrumentedUnpooledDirectByteBuf(UnpooledByteBufAllocator, int, int): 
+  # freeDirect(ByteBuffer): void
+  # allocateDirect(int): ByteBuffer
+}
+class InstrumentedUnpooledHeapByteBuf {
+  ~ InstrumentedUnpooledHeapByteBuf(UnpooledByteBufAllocator, int, int): 
+  # allocateArray(int): byte[]
+  # freeArray(byte[]): void
+}
+class InstrumentedUnpooledUnsafeDirectByteBuf {
+  ~ InstrumentedUnpooledUnsafeDirectByteBuf(UnpooledByteBufAllocator, int, int): 
+  # freeDirect(ByteBuffer): void
+  # allocateDirect(int): ByteBuffer
+}
+class InstrumentedUnpooledUnsafeHeapByteBuf {
+  ~ InstrumentedUnpooledUnsafeHeapByteBuf(UnpooledByteBufAllocator, int, int): 
+  # freeArray(byte[]): void
+  # allocateArray(int): byte[]
+}
+class InstrumentedUnpooledUnsafeNoCleanerDirectByteBuf {
+  ~ InstrumentedUnpooledUnsafeNoCleanerDirectByteBuf(UnpooledByteBufAllocator, int, int): 
+  # freeDirect(ByteBuffer): void
+  # allocateDirect(int): ByteBuffer
+  ~ reallocateDirect(ByteBuffer, int): ByteBuffer
+}
+class PoolThreadLocalCache {
+  ~ PoolThreadLocalCache(boolean): 
+  # initialValue(): PoolThreadCache
+  - leastUsedArena(PoolArena<T>[]): PoolArena<T>
+  # onRemoval(PoolThreadCache): void
+}
+class PooledByteBufAllocator {
+  + PooledByteBufAllocator(boolean, int, int, int, int, int, int, int): 
+  + PooledByteBufAllocator(): 
+  + PooledByteBufAllocator(boolean, int, int, int, int, int, int, int, boolean): 
+  + PooledByteBufAllocator(boolean, int, int, int, int): 
+  + PooledByteBufAllocator(boolean, int, int, int, int, int, int, int, boolean, int): 
+  + PooledByteBufAllocator(boolean, int, int, int, int, int, int, boolean, int): 
+  + PooledByteBufAllocator(boolean, int, int, int, int, int, int, boolean): 
+  + PooledByteBufAllocator(int, int, int, int): 
+  + PooledByteBufAllocator(boolean): 
+  + numHeapArenas(): int
+  # newDirectBuffer(int, int): ByteBuf
+  + smallCacheSize(): int
+  + defaultPreferDirect(): boolean
+  - validateAndCalculateChunkSize(int, int): int
+  + defaultNormalCacheSize(): int
+  - newArenaArray(int): PoolArena<T>[]
+  + heapArenas(): List<PoolArenaMetric>
+  + tinyCacheSize(): int
+  + defaultNumHeapArena(): int
+  ~ usedHeapMemory(): long
+  + trimCurrentThreadCache(): boolean
+  + defaultMaxOrder(): int
+  + defaultUseCacheForAllThreads(): boolean
+  + hasThreadLocalCache(): boolean
+  + chunkSize(): int
+  + normalCacheSize(): int
+  + defaultNumDirectArena(): int
+  ~ threadCache(): PoolThreadCache
+  + directArenas(): List<PoolArenaMetric>
+  + dumpStats(): String
+  + freeThreadLocalCache(): void
+  - validateAndCalculatePageShifts(int, int): int
+  + defaultPageSize(): int
+  + metric(): PooledByteBufAllocatorMetric
+  + numThreadLocalCaches(): int
+  + defaultTinyCacheSize(): int
+  - usedMemory(PoolArena<?>[]): long
+  # newHeapBuffer(int, int): ByteBuf
+  ~ usedDirectMemory(): long
+  + defaultSmallCacheSize(): int
+  + numDirectArenas(): int
+   directMemoryCacheAlignmentSupported: boolean
+   directBufferPooled: boolean
+}
+class UnpooledByteBufAllocator {
+  + UnpooledByteBufAllocator(boolean, boolean, boolean): 
+  + UnpooledByteBufAllocator(boolean): 
+  + UnpooledByteBufAllocator(boolean, boolean): 
+  # newHeapBuffer(int, int): ByteBuf
+  + compositeDirectBuffer(int): CompositeByteBuf
+  ~ decrementDirect(int): void
+  # newDirectBuffer(int, int): ByteBuf
+  ~ decrementHeap(int): void
+  + compositeHeapBuffer(int): CompositeByteBuf
+  ~ incrementDirect(int): void
+  ~ incrementHeap(int): void
+  + metric(): ByteBufAllocatorMetric
+   directBufferPooled: boolean
+}
+class UnpooledByteBufAllocatorMetric {
+  + UnpooledByteBufAllocatorMetric(): 
+  + usedDirectMemory(): long
+  + toString(): String
+  + usedHeapMemory(): long
+}
+
+AbstractByteBufAllocator                          -[#008200,dashed]-^  ByteBufAllocator                                 
+InstrumentedUnpooledDirectByteBuf                 +-[#820000,plain]-  UnpooledByteBufAllocator                         
+InstrumentedUnpooledHeapByteBuf                   +-[#820000,plain]-  UnpooledByteBufAllocator                         
+InstrumentedUnpooledUnsafeDirectByteBuf           +-[#820000,plain]-  UnpooledByteBufAllocator                         
+InstrumentedUnpooledUnsafeHeapByteBuf             +-[#820000,plain]-  UnpooledByteBufAllocator                         
+InstrumentedUnpooledUnsafeNoCleanerDirectByteBuf  +-[#820000,plain]-  UnpooledByteBufAllocator                         
+PoolThreadLocalCache                              +-[#820000,plain]-  PooledByteBufAllocator                           
+PooledByteBufAllocator                            -[#000082,plain]-^  AbstractByteBufAllocator                         
+UnpooledByteBufAllocator                          -[#000082,plain]-^  AbstractByteBufAllocator                         
+UnpooledByteBufAllocatorMetric                    +-[#820000,plain]-  UnpooledByteBufAllocator                         
+@enduml

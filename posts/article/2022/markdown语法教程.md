@@ -49,7 +49,7 @@ markdown最后会被输出为html,因此可以使用a标签,然后设置target�
 
 嵌入svg文件可以使用**embed**，**object**，**iframe**标签
 
-`<embed src="xxx.svg" type="image/svg+xml" style="width: 100%;height: 100%;"/>`
+`<object data="xxx.svg" type="image/svg+xml" style="width: 100%;height: 100%;"/>`
 
 ### 3.格式转化
 
